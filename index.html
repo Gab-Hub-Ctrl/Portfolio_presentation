@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>IT Dashboard, dossier de présentation</title>
+  <meta name="description" content="Dossier de présentation technique de Gabriel ROULON : IT Dashboard, gouvernance IA, agents opérationnels, candidature Bachelor IA.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "IT Dashboard, dossier de présentation",
+    "description": "Dossier de présentation technique de Gabriel ROULON",
+    "author": { "@type": "Person", "name": "Gabriel ROULON" },
+    "inLanguage": "fr-FR",
+    "dateModified": "2026-02-20"
+  }
+  </script>
+  <style>
+    .page-intro {
+      padding: 28px 0 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+    .intro-line {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .intro-name { font-size: 1.25em; font-weight: 700; color: var(--text); }
+    .intro-sep { color: var(--border); font-size: 1em; }
+    .intro-title { font-size: 0.92em; color: var(--text-secondary); }
+
+    /* === FILTRE PROFIL === */
+    .profile-filter {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 16px 0 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .profile-filter-label {
+      font-size: 0.75em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-secondary);
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .profile-chip {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 18px;
+      font-size: 0.84em;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      font-family: var(--font);
+      white-space: nowrap;
+    }
+    .profile-chip:hover {
+      border-color: var(--text-secondary);
+      color: var(--text);
+    }
+    .profile-chip.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+    .profile-chip.active:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+    .profile-hint {
+      font-size: 0.74em;
+      color: var(--text-secondary);
+      opacity: 0.6;
+      font-style: italic;
+      margin-left: 4px;
+    }
+
+    /* Section label au-dessus des accordeons */
+    .section-label {
+      font-size: 0.72em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: var(--text-secondary);
+      margin: 24px 0 8px;
+    }
+    .index-section-group:first-of-type .section-label { margin-top: 0; }
+
+    /* Groupe section (label + accordéon) */
+    .index-section-group { transition: opacity 0.2s; }
+    .index-section-group.section-hidden { display: none; }
+
+    /* Accordeons index */
+    .index-acc .accordion-header { border-left-color: var(--border); }
+    .index-acc.active .accordion-header { border-left-color: var(--text-secondary); }
+
+    /* Grilles de cartes */
+    .nav-cards-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .nav-cards-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    /* Masquage animé des cartes */
+    .nav-card.card-hidden {
+      display: none;
+    }
+
+    /* Badge statut sur les cartes */
+    .card-status {
+      display: inline-block;
+      font-size: 0.70em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 3px;
+      margin-bottom: 2px;
+    }
+    .card-status.finalized {
+      color: #1a7a3a;
+      background: rgba(26, 122, 58, 0.08);
+      border: 1px solid rgba(26, 122, 58, 0.25);
+    }
+    .card-status.in-progress {
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid var(--border);
+    }
+    .card-status.demo {
+      color: var(--blue);
+      background: var(--blue-dim);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+    }
+
+    @media (max-width: 768px) {
+      .nav-cards-3, .nav-cards-2 { grid-template-columns: 1fr; }
+      .profile-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Modal Note Importante -->
+  <div id="quick-read-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" aria-label="Fermer">&times;</button>
+      <div class="modal-title" id="modal-title">Note importante</div>
+      <div class="modal-body">
+        <p><strong style="color:var(--text)">INIT_SEQUENCE</strong> est une procédure architecturale conçue pour les IA de session à contexte persistant. Sur les IA publiques actuelles (GPT-4, Claude, Gemini), l'imposition d'un état externe est restreinte par les fournisseurs.</p>
+        <p style="margin-top:12px">Sa valeur est <strong style="color:var(--text)">démonstrative</strong> : structuration d'un système complexe, machine à états finis, gouvernance formalisée.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Statuts des projets -->
+  <div id="status-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="status-modal-title" aria-hidden="true">
+    <div class="modal-card">
+      <button class="modal-close" id="status-modal-close" aria-label="Fermer">&times;</button>
+      <div class="modal-title" id="status-modal-title">Statuts des projets</div>
+      <div class="modal-body">
+        <p style="margin-bottom:12px;color:var(--text-secondary);font-size:0.88em">Ce dossier présente des projets à différents stades d'avancement.</p>
+        <p style="margin-bottom:6px"><strong style="color:#1a7a3a">Finalisés</strong> (livrables autonomes complets) :</p>
+        <ul style="margin:0 0 14px 18px;font-size:0.88em;color:var(--text-secondary);line-height:1.8">
+          <li>Étude PEA v2.0, document complet (11 chapitres)</li>
+          <li>Documentation financière (vue d'ensemble PEA)</li>
+          <li>Documentation technique (Procédure VLAN)</li>
+          <li>Réalisation de standards (31 standards)</li>
+        </ul>
+        <p style="margin-bottom:6px"><strong style="color:var(--text)">En cours de développement</strong> (architecture et démarche présentées) :</p>
+        <ul style="margin:0 0 14px 18px;font-size:0.88em;color:var(--text-secondary);line-height:1.8">
+          <li>Présentation synthétique (IT Dashboard)</li>
+          <li>POC Agents (Cerveau, Chatbot, Collecteurs)</li>
+          <li>Maintenance Agent (suite modulaire Windows)</li>
+          <li>Mon Laboratoire (infrastructure virtuelle)</li>
+        </ul>
+        <p style="margin-bottom:6px"><strong style="color:var(--blue)">Outil démonstratif</strong> :</p>
+        <ul style="margin:0 0 0 18px;font-size:0.88em;color:var(--text-secondary);line-height:1.8">
+          <li>INIT_SEQUENCE (gouvernance IA, machine à états finis)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Accueil">
+        <span class="header-main">Présentation</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <button class="btn-quick-read" id="btn-status-modal" aria-haspopup="dialog" aria-label="Statuts des projets">
+        Statuts
+      </button>
+      <button class="btn-quick-read btn-important" aria-haspopup="dialog" aria-label="Note importante sur INIT_SEQUENCE">
+        Important
+      </button>
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
+          Navigation <span class="nav-arrow">&#9660;</span>
+        </button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
+          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <h1 class="sr-only">Présentation Gabriel ROULON, dossier de candidature Bachelor Intelligence Artificielle 2026</h1>
+
+    <div class="page-intro">
+      <div class="intro-line">
+        <span class="intro-name">Gabriel ROULON</span>
+        <span class="intro-sep">/</span>
+        <span class="intro-title">Candidature Bachelor Intelligence Artificielle 2026</span>
+      </div>
+    </div>
+
+    <!-- Filtre profil -->
+    <div class="profile-filter" role="group" aria-label="Filtrer le contenu par profil de lecteur">
+      <span class="profile-filter-label" id="filter-label">Vue</span>
+      <button class="profile-chip" data-profile="rh" aria-pressed="false">RH / Recruteur</button>
+      <button class="profile-chip" data-profile="ecole" aria-pressed="false">Jury école</button>
+      <button class="profile-chip" data-profile="tech" aria-pressed="false">Technicien</button>
+      <span class="profile-hint" id="profile-hint" aria-live="polite">Cliquer à nouveau pour réinitialiser</span>
+    </div>
+
+    <!-- === CANDIDATURE === -->
+    <div class="index-section-group" data-section="candidature">
+      <p class="section-label">Profil et candidature</p>
+      <div class="accordion index-acc" id="acc-candidature">
+        <button class="accordion-header" aria-controls="acc-candidature-content">
+          Profil et candidature
+        </button>
+        <div class="accordion-content" id="acc-candidature-content">
+          <div class="accordion-inner">
+            <div class="nav-cards-2" role="list">
+
+              <a href="profil_personnel.html" class="nav-card" role="listitem" data-card="profil">
+                <span class="card-title">Profil personnel</span>
+                <span class="card-desc">Parcours, compétences, relation à l'IA et objectif de gouvernance.</span>
+              </a>
+
+              <a href="cv.html" class="nav-card" role="listitem" data-card="cv">
+                <span class="card-title">Curriculum Vitae</span>
+                <span class="card-desc">CV Gabriel ROULON — candidature Bachelor IA, alternance 2026.</span>
+              </a>
+
+              <a href="lettre_motivation_ecole.html" class="nav-card" role="listitem" data-card="lettre-ecole">
+                <span class="card-title">Lettre de motivation (École)</span>
+                <span class="card-desc">Candidature au Bachelor Intelligence Artificielle, Eugenia School.</span>
+              </a>
+
+              <a href="lettre_motivation_entreprise.html" class="nav-card" role="listitem" data-card="lettre-entreprise">
+                <span class="card-title">Lettre de motivation (Entreprise)</span>
+                <span class="card-desc">Candidature à une alternance en Intelligence Artificielle et gouvernance des systèmes.</span>
+              </a>
+
+              <a href="contact.html" class="nav-card" role="listitem" data-card="contact">
+                <span class="card-title">Contact</span>
+                <span class="card-desc">Coordonnées de Gabriel ROULON : email et téléphone.</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === TECHNIQUE === -->
+    <div class="index-section-group" data-section="technique">
+      <p class="section-label">Projet principal</p>
+      <div class="accordion index-acc" id="acc-technique">
+        <button class="accordion-header" aria-controls="acc-technique-content">
+          IT Dashboard
+        </button>
+        <div class="accordion-content" id="acc-technique-content">
+          <div class="accordion-inner">
+            <div class="nav-cards-2" role="list">
+
+              <a href="presentation_synthetique.html" class="nav-card" role="listitem" data-card="synthese">
+                <span class="card-title">Présentation synthétique</span>
+                <span class="card-status in-progress">En cours de développement</span>
+                <span class="card-desc">Architecture du projet, pipeline ETL, agents et métriques clés.</span>
+              </a>
+
+              <a href="init_sequence.html" class="nav-card" role="listitem" data-card="init">
+                <span class="card-title">INIT_SEQUENCE</span>
+                <span class="card-status demo">Outil démonstratif</span>
+                <span class="card-desc">Gouvernance IA en machine à états finis, 4 couches, 7 prompts fondateurs.</span>
+              </a>
+
+              <a href="poc_agents.html" class="nav-card" role="listitem" data-card="poc">
+                <span class="card-title">POC Agents</span>
+                <span class="card-status in-progress">En cours de développement</span>
+                <span class="card-desc">Trois agents opérationnels v2.1.0 : Cerveau, Chatbot, Collecteurs.</span>
+              </a>
+
+              <a href="realisations_standards.html" class="nav-card" role="listitem" data-card="standards">
+                <span class="card-title">Réalisation de standards</span>
+                <span class="card-status finalized">Finalisé</span>
+                <span class="card-desc">31 standards en 8 catégories. Format professionnel : référence, version, checklist, guide IA.</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === RÉALISATIONS — FINANCE === -->
+    <div class="index-section-group" data-section="realisations-finance">
+      <p class="section-label">Finance & Investissement</p>
+      <div class="accordion index-acc" id="acc-realisations-finance">
+        <button class="accordion-header" aria-controls="acc-realisations-finance-content">
+          Finance &amp; Investissement
+        </button>
+        <div class="accordion-content" id="acc-realisations-finance-content">
+          <div class="accordion-inner">
+            <div class="nav-cards-3" role="list">
+
+              <a href="realisations_doc_financiere.html" class="nav-card" role="listitem" data-card="doc-financiere">
+                <span class="card-title">Documentation financière</span>
+                <span class="card-status finalized">Finalisé</span>
+                <span class="card-desc">Vue d'ensemble de l'étude PEA v2.0 : 11 chapitres, 4 ETF, 3 profils de portefeuille.</span>
+              </a>
+
+              <a href="PEA_V2_PRO.html" class="nav-card" role="listitem" data-card="pea-document">
+                <span class="card-title">Étude PEA v2.0, document complet</span>
+                <span class="card-status finalized">Finalisé</span>
+                <span class="card-desc">Étude intégrale : cadre réglementaire, ETF 2026, construction de portefeuilles, simulations et analyse des risques.</span>
+              </a>
+
+              <a href="simulation_pea.html" class="nav-card" role="listitem" data-card="simulation-pea">
+                <span class="card-title">Simulation PEA</span>
+                <span class="card-status demo">Interactif</span>
+                <span class="card-desc">Projections temps réel, stress tests ±30 pp, sensibilité au rendement, robustesse et ratios.</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === RÉALISATIONS — INFORMATIQUE === -->
+    <div class="index-section-group" data-section="realisations-it">
+      <p class="section-label">Informatique & Systèmes</p>
+      <div class="accordion index-acc" id="acc-realisations-it">
+        <button class="accordion-header" aria-controls="acc-realisations-it-content">
+          Informatique &amp; Systèmes
+        </button>
+        <div class="accordion-content" id="acc-realisations-it-content">
+          <div class="accordion-inner">
+            <div class="nav-cards-3" role="list">
+
+              <a href="realisations_doc_technique.html" class="nav-card" role="listitem" data-card="doc-technique">
+                <span class="card-title">Documentation technique</span>
+                <span class="card-status finalized">Finalisé</span>
+                <span class="card-desc">Procédure VLAN-DNS-DHCP sur Cisco Packet Tracer. Tableau d'adressage, 5 séries de tests.</span>
+              </a>
+
+              <a href="realisations_maintenance_agent.html" class="nav-card" role="listitem" data-card="maintenance">
+                <span class="card-title">Maintenance Agent</span>
+                <span class="card-status in-progress">En cours de conception</span>
+                <span class="card-desc">Suite modulaire Windows : diagnostics, maintenance, sécurité RBAC. PowerShell + React + Vite.</span>
+              </a>
+
+              <a href="mon_laboratoire.html" class="nav-card" role="listitem" data-card="laboratoire">
+                <span class="card-title">Mon Laboratoire</span>
+                <span class="card-status in-progress">En cours de conception</span>
+                <span class="card-desc">Infrastructure virtuelle v1.1.0. Hyper-V, Proxmox, 11 labs, collection ISO, automatisation PowerShell.</span>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Démarche de démonstration technique et académique 2026</p>
+  </footer>
+
+  <script src="common.js" defer></script>
+  <script>
+    /* === MODAL STATUTS === */
+    document.addEventListener('DOMContentLoaded', function () {
+      var modal = document.getElementById('status-modal');
+      var btnOpen = document.getElementById('btn-status-modal');
+      var btnClose = document.getElementById('status-modal-close');
+      function openModal() {
+        modal.setAttribute('aria-hidden', 'false');
+        modal.style.display = 'flex';
+        btnClose.focus();
+      }
+      function closeModal() {
+        modal.setAttribute('aria-hidden', 'true');
+        modal.style.display = '';
+        btnOpen.focus();
+      }
+      btnOpen.addEventListener('click', openModal);
+      btnClose.addEventListener('click', closeModal);
+      modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+      });
+    });
+
+    /* === FILTRE PROFIL === */
+    (function () {
+      var PROFILES = {
+        rh:    ['profil', 'lettre-entreprise', 'contact', 'synthese'],
+        ecole: ['profil', 'lettre-ecole', 'contact', 'synthese', 'init', 'poc', 'standards', 'doc-financiere', 'pea-document', 'simulation-pea'],
+        tech:  ['profil', 'contact', 'synthese', 'init', 'poc', 'standards', 'doc-technique', 'maintenance', 'laboratoire']
+      };
+
+      var LABELS = { rh: 'RH / Recruteur', ecole: 'Jury école', tech: 'Technicien' };
+
+      function applyProfile(profile) {
+        var cards = document.querySelectorAll('[data-card]');
+        cards.forEach(function (card) {
+          var id = card.getAttribute('data-card');
+          if (!profile || PROFILES[profile].indexOf(id) !== -1) {
+            card.classList.remove('card-hidden');
+          } else {
+            card.classList.add('card-hidden');
+          }
+        });
+
+        document.querySelectorAll('.index-section-group').forEach(function (group) {
+          var visible = group.querySelectorAll('.nav-card:not(.card-hidden)').length;
+          group.classList.toggle('section-hidden', !!profile && visible === 0);
+        });
+
+        document.querySelectorAll('.profile-chip').forEach(function (chip) {
+          var active = chip.getAttribute('data-profile') === profile;
+          chip.classList.toggle('active', active);
+          chip.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+
+        var hint = document.getElementById('profile-hint');
+        var label = document.getElementById('filter-label');
+        if (profile) {
+          hint.textContent = 'Vue ' + LABELS[profile] + '. Cliquer à nouveau pour tout afficher.';
+          label.textContent = 'Vue';
+        } else {
+          hint.textContent = 'Sélectionner un profil pour filtrer l\'affichage.';
+          label.textContent = 'Vue';
+        }
+
+        if (profile) {
+          localStorage.setItem('presentationProfile', profile);
+        } else {
+          localStorage.removeItem('presentationProfile');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.profile-chip').forEach(function (chip) {
+          chip.addEventListener('click', function () {
+            var p = chip.getAttribute('data-profile');
+            var current = localStorage.getItem('presentationProfile');
+            applyProfile(current === p ? null : p);
+          });
+        });
+
+        var saved = localStorage.getItem('presentationProfile');
+        if (saved && PROFILES[saved]) {
+          applyProfile(saved);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

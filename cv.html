@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CV Gabriel ROULON — Candidature Bachelor IA</title>
+  <meta name="description" content="Curriculum Vitae de Gabriel ROULON, candidat Bachelor Intelligence Artificielle en alternance 2026. TSSR ENI, IT Dashboard POC opérationnel, gouvernance IA.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Gabriel ROULON",
+    "jobTitle": "Candidat Bachelor Intelligence Artificielle — Alternance 2026",
+    "email": "gabriel.roulon@gmail.com",
+    "telephone": "+33638226821",
+    "address": { "@type": "PostalAddress", "addressLocality": "Clermont-Ferrand" },
+    "inLanguage": "fr-FR",
+    "dateModified": "2026-03-04"
+  }
+  </script>
+  <style>
+    footer { display: none; }
+
+    /* === VIEWER DOCUMENT === */
+    main {
+      padding-top: var(--header-h);
+      max-width: none;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background: var(--bg-secondary);
+      box-sizing: border-box;
+      padding-bottom: 32px;
+    }
+
+    /* === PAGE A4 === */
+    .cv-wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 794px;
+      height: 1123px;
+      flex-shrink: 0;
+      background: var(--bg);
+      box-shadow: 0 4px 32px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    /* === BANDEAU NOM / TITRE === */
+    .cv-banner {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 22px 10px;
+      background: var(--bg-secondary);
+      border-bottom: 2px solid var(--blue);
+      flex-shrink: 0;
+    }
+
+    /* === CORPS PRINCIPAL === */
+    .cv-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* === LIGNE INTRO (Contact | Accroche) === */
+    .cv-intro-row {
+      display: flex;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cv-intro-col-left {
+      width: 220px;
+      min-width: 200px;
+      flex-shrink: 0;
+      background: var(--bg-secondary);
+      border-right: 2px solid var(--blue);
+      padding: 10px 13px 10px;
+    }
+    .cv-intro-col-right {
+      flex: 1;
+      padding: 10px 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* === LIGNE CONTENU (Compétences | Expériences+Formation) === */
+    .cv-content-row {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* === COLONNE GAUCHE (Compétences) === */
+    .cv-left {
+      width: 220px;
+      min-width: 200px;
+      background: var(--bg-secondary);
+      border-right: 2px solid var(--blue);
+      overflow: hidden;
+      padding: 5px 13px 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Supprime le margin-bottom de section pour aligner le bas de cv-left avec cv-right */
+    .cv-left .cv-section { margin-bottom: 0; }
+
+    /* === COLONNE DROITE (Expériences + Formation + Bas) === */
+    .cv-right {
+      flex: 1;
+      overflow: hidden;
+      padding: 10px 20px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* === NOM ET TITRE === */
+    .cv-name {
+      font-size: 1.78em;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--text);
+      line-height: 1.1;
+      margin: 0;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .cv-job-title {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      margin: 0;
+    }
+    .cv-job-title span {
+      font-size: 0.84em;
+      font-weight: 600;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      line-height: 1.35;
+      text-align: right;
+    }
+
+    /* === SECTIONS === */
+    .cv-section { margin-bottom: 18px; }
+    .cv-section-title {
+      font-size: 0.70em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--blue);
+      margin: 0 0 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* === CONTACT === */
+    .cv-contact-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .cv-contact-list li { font-size: 0.78em; color: var(--text-secondary); line-height: 1.5; }
+    .cv-contact-list a { color: var(--blue); text-decoration: none; }
+    .cv-contact-list a:hover { text-decoration: underline; }
+
+    /* === COMPÉTENCES === */
+    .cv-skills-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .cv-skill-groups {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* === CONTACT : taille augmentée === */
+    .cv-contact-section .cv-section-title { font-size: 0.78em; }
+    .cv-contact-section .cv-contact-list li { font-size: 0.86em; }
+    .cv-contact-micro-title {
+      font-size: 0.65em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: var(--text-secondary);
+      margin: 8px 0 5px;
+      padding-top: 7px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* === GROUPES COMPÉTENCES === */
+    .cv-skill-group { }
+    .cv-skill-group-title {
+      font-size: 0.75em;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 3px;
+    }
+    .cv-skill-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cv-skill-list li {
+      font-size: 0.75em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 10px;
+      position: relative;
+    }
+    .cv-skill-list li::before {
+      content: '';
+      position: absolute;
+      left: 1px;
+      top: 0.55em;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+      opacity: 0.45;
+    }
+
+    /* === QUALITÉS === */
+    .cv-section-qual { text-align: center; }
+    .cv-qual-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 3px 18px;
+    }
+    .cv-qual-list li { font-size: 0.76em; color: var(--text-secondary); line-height: 1.5; }
+    .cv-qual-list li strong { color: var(--text); font-weight: 600; }
+
+    /* === TEXTE SIMPLE === */
+    .cv-simple { font-size: 0.76em; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+
+
+    /* === ESPACEMENT UNIFORME SECTIONS COLONNE DROITE === */
+    .cv-right > .cv-section { margin-bottom: 0; }
+
+    /* === ACCROCHE === */
+    .cv-accroche {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 4px;
+      padding: 14px 18px;
+    }
+    .cv-accroche p {
+      font-size: 0.80em;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin: 0;
+      text-align: justify;
+    }
+    .cv-accroche p strong { color: var(--text); }
+
+    /* === EXPÉRIENCES === */
+    .cv-exp-item { margin-bottom: 11px; }
+    .cv-exp-item:last-child { margin-bottom: 0; }
+    .cv-exp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .cv-exp-title {
+      font-size: 0.80em;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .cv-exp-date {
+      font-size: 0.72em;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cv-exp-sub {
+      font-size: 0.72em;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin: 2px 0 3px;
+    }
+    .cv-exp-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 4px 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .cv-exp-bullets li {
+      font-size: 0.76em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      padding-left: 12px;
+      position: relative;
+    }
+    .cv-exp-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+    .cv-exp-minor {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .cv-exp-minor .cv-exp-title {
+      font-weight: 400;
+      color: var(--text-secondary);
+      font-size: 0.76em;
+    }
+    .cv-hr { border: none; border-top: 1px solid var(--border); margin: 9px 0 12px; }
+
+    /* === FORMATION === */
+    .cv-form-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .cv-form-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .cv-form-name {
+      font-size: 0.80em;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.35;
+      flex: 1;
+    }
+    .cv-form-date {
+      font-size: 0.72em;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* === PRINT === */
+    @media print {
+      @page { size: A4; margin: 0; }
+      header, .nav-dropdown, .cv-download-btn { display: none !important; }
+      footer { display: none !important; }
+      main { padding-top: 0; background: none; display: block; }
+      .cv-wrapper { width: 210mm; height: 297mm; box-shadow: none; margin: 0; }
+      .cv-body, .cv-left, .cv-right { overflow: visible; }
+      .cv-left { border-right: 1px solid #ccc; }
+      .cv-banner { border-bottom: 1px solid #ccc; }
+    }
+
+    /* === RANGÉE BASSE DROITE (Centres d'intérêt + Certifications) === */
+    .cv-bottom-row {
+      display: flex;
+      gap: 24px;
+    }
+    .cv-bottom-row .cv-section { margin-bottom: 0; }
+    .cv-bottom-interests { flex: 1; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+    .cv-bottom-certif    { flex: 0 0 150px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 860px) {
+      main { justify-content: flex-start; overflow-x: auto; }
+      .cv-wrapper { margin: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Retour à l'accueil">
+        <span class="header-main">Présentation</span>
+        <span class="header-sub">Candidature Bachelor IA, Eugenia School 2026</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
+          Navigation <span class="nav-arrow">&#9660;</span>
+        </button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
+          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="cv-wrapper">
+
+      <!-- ===== BANDEAU NOM / TITRE ===== -->
+      <div class="cv-banner">
+        <h1 class="cv-name">Gabriel ROULON</h1>
+        <div class="cv-job-title">
+          <span>Bachelor IA & Business</span>
+          <span>Alternance 2026 &nbsp;·&nbsp; Eugenia School Paris</span>
+        </div>
+      </div>
+
+      <!-- ===== CORPS PRINCIPAL ===== -->
+      <div class="cv-body">
+
+        <!-- === LIGNE INTRO : Contact | Accroche === -->
+        <div class="cv-intro-row">
+
+          <div class="cv-intro-col-left">
+            <section class="cv-section cv-contact-section" aria-label="Contact">
+              <h2 class="cv-section-title">Contact</h2>
+              <ul class="cv-contact-list">
+                <li><a href="tel:+33638226821">06 38 22 68 21</a></li>
+                <li><a href="mailto:gabriel.roulon@gmail.com">gabriel.roulon@gmail.com</a></li>
+                <li><a href="index.html">Portfolio - IT Dashboard</a></li>
+              </ul>
+              <p class="cv-contact-micro-title">Profil</p>
+              <ul class="cv-contact-list">
+                <li>FR · Anglais intermédiaire</li>
+                <li>Véhiculé · Mobilité nationale</li>
+              </ul>
+            </section>
+          </div>
+
+          <div class="cv-intro-col-right">
+            <div class="cv-accroche" role="note">
+              <p>En formation TSSR (Bac+2) à l'ENI, je candidate en Bachelor Intelligence Artificielle & Business (3ème année, alternance) à Eugenia School, Paris. En parallèle, j'ai finalisé INIT_SEQUENCE, protocole de gouvernance IA par machine à états finis (7 états, 3&nbsp;607 lignes), et développe IT Dashboard, POC de surveillance IT full-stack (architecture multi-agents, 31 standards). Mon objectif : me spécialiser dans la gouvernance, l'éthique et l'analyse et interprétation de données IA.</p>
+            </div>
+          </div>
+
+        </div><!-- /cv-intro-row -->
+
+        <!-- === LIGNE CONTENU : Compétences | Expériences + Formation === -->
+        <div class="cv-content-row">
+
+          <!-- COLONNE GAUCHE : Compétences -->
+          <aside class="cv-left" aria-label="Compétences">
+            <section class="cv-section cv-skills-section" aria-label="Compétences">
+              <h2 class="cv-section-title">Compétences</h2>
+              <div class="cv-skill-groups">
+
+                <div class="cv-skill-group">
+                  <p class="cv-skill-group-title">Intelligence Artificielle</p>
+                  <ul class="cv-skill-list">
+                    <li>Gouvernance IA par machine à états finis</li>
+                    <li>Orchestration multi-agents IA (gouvernance et supervision)</li>
+                    <li>Prompt engineering et design de protocoles</li>
+                    <li>Analyse de logs et corrélation d'alertes</li>
+                  </ul>
+                </div>
+
+                <div class="cv-skill-group">
+                  <p class="cv-skill-group-title">Veille technologique &amp; analyse</p>
+                  <ul class="cv-skill-list">
+                    <li>Veille IA, cybersécurité et systèmes</li>
+                    <li>Exploitation et analyse de sources ouvertes</li>
+                    <li>Synthèse et restitution de l'information</li>
+                  </ul>
+                </div>
+
+                <div class="cv-skill-group">
+                  <p class="cv-skill-group-title">Développement web &amp; scripting</p>
+                  <ul class="cv-skill-list">
+                    <li>Python, FastAPI (notions - backend)</li>
+                    <li>TypeScript, React (notions - frontend)</li>
+                    <li>PowerShell (scripts portables)</li>
+                    <li>HashiCorp Vault (gestion des secrets)</li>
+                  </ul>
+                </div>
+
+                <div class="cv-skill-group">
+                  <p class="cv-skill-group-title">Systèmes &amp; Réseaux</p>
+                  <ul class="cv-skill-list">
+                    <li>Windows 10/11 Pro, Windows Server, AD</li>
+                    <li>Linux (notions), Proxmox, FOG, GLPI</li>
+                    <li>DHCP, DNS, VLANs, TCP/UDP, VoIP</li>
+                    <li>Hyper-V, VirtualBox, segmentation réseau</li>
+                  </ul>
+                </div>
+
+                <div class="cv-skill-group">
+                  <p class="cv-skill-group-title">Organisation &amp; méthodes</p>
+                  <ul class="cv-skill-list">
+                    <li>Planification et suivi de projet</li>
+                    <li>Optimisation des ressources et délais</li>
+                    <li>Trello, MS Project, Suite Office</li>
+                  </ul>
+                </div>
+
+
+              </div>
+            </section>
+          </aside>
+
+          <!-- COLONNE DROITE : Expériences + Formation + Bas -->
+          <div class="cv-right" aria-label="Expériences et formation">
+
+            <!-- EXPÉRIENCES -->
+            <section class="cv-section" aria-label="Expériences professionnelles">
+              <h2 class="cv-section-title">Expériences</h2>
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">IT Dashboard - Réalisation personnelle (en cours)</span>
+                  <span class="cv-exp-date">2025 – 2026</span>
+                </div>
+                <p class="cv-exp-sub">POC · Architecture multi-agents · Full-stack</p>
+                <ul class="cv-exp-bullets">
+                  <li>Surveillance IT multi-pôles : FastAPI/Python, React/TypeScript, HashiCorp Vault, 31 standards</li>
+                </ul>
+              </div>
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">INIT_SEQUENCE - Projet personnel réalisé</span>
+                  <span class="cv-exp-date">2025</span>
+                </div>
+                <p class="cv-exp-sub">Protocole de gouvernance IA - machine à états finis (7 états, 3&nbsp;607 lignes)</p>
+              </div>
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">Stage de fin de formation TSSR - Entreprise Secom</span>
+                  <span class="cv-exp-date">Juil. – août 2026 (prévu)</span>
+                </div>
+                <p class="cv-exp-sub">Support utilisateurs, gestion de parc informatique, assistance technique</p>
+              </div>
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">Stage de fin de formation TAI - Entreprise Secom</span>
+                  <span class="cv-exp-date">Juil. – sept. 2025</span>
+                </div>
+                <p class="cv-exp-sub">Helpdesk niv. 1 et 2 : résolution d'incidents, déploiement et gestion de parc</p>
+              </div>
+
+              <hr class="cv-hr">
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">Électricien apprenti - SEGMA (PME)</span>
+                  <span class="cv-exp-date">2021 – 2023</span>
+                </div>
+                <p class="cv-exp-sub">Installation et maintenance d'équipements électriques industriels</p>
+              </div>
+
+              <div class="cv-exp-item">
+                <div class="cv-exp-header">
+                  <span class="cv-exp-title">Technicien maintenance industrielle - FPT POWERTRAIN</span>
+                  <span class="cv-exp-date">2019 – 2020</span>
+                </div>
+                <p class="cv-exp-sub">Maintenance préventive et curative sur ligne de production automobile</p>
+              </div>
+
+              <div class="cv-exp-minor">
+                <span class="cv-exp-title">Expériences courtes (CDD) : Agent commercial ACE · Employé polyvalent Leclerc (2019–2020)</span>
+              </div>
+            </section>
+
+            <!-- FORMATION -->
+            <section class="cv-section" aria-label="Formation">
+              <h2 class="cv-section-title">Formation</h2>
+              <div class="cv-form-list">
+                <div class="cv-form-item">
+                  <span class="cv-form-name">TSSR - ENI</span>
+                  <span class="cv-form-date">2026 (en cours)</span>
+                </div>
+                <div class="cv-form-item">
+                  <span class="cv-form-name">TAI - Human Booster</span>
+                  <span class="cv-form-date">2024 – 2025</span>
+                </div>
+                <div class="cv-form-item">
+                  <span class="cv-form-name">Réorientation IT - Piscine école 42, prospection terrain métier</span>
+                  <span class="cv-form-date">2023 – 2024</span>
+                </div>
+                <div class="cv-form-item">
+                  <span class="cv-form-name">Bac Pro MELEC (alternance)</span>
+                  <span class="cv-form-date">2021 – 2023</span>
+                </div>
+                <div class="cv-form-item">
+                  <span class="cv-form-name">BTS MS Production (alternance)</span>
+                  <span class="cv-form-date">2019 – 2020</span>
+                </div>
+                <div class="cv-form-item">
+                  <span class="cv-form-name">DUT GEA - IUT Saint-Étienne</span>
+                  <span class="cv-form-date">2018 – 2019</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- QUALITÉS (ligne pleine largeur) -->
+            <section class="cv-section cv-section-qual" aria-label="Qualités personnelles">
+              <h2 class="cv-section-title">Qualités</h2>
+              <ul class="cv-qual-list">
+                <li>Esprit d'analyse et sens critique</li>
+                <li>Veille technologique active</li>
+                <li>Collaboration et transmission des savoirs</li>
+                <li>Rigueur, fiabilité et gestion du stress</li>
+              </ul>
+            </section>
+
+            <!-- RANGÉE BASSE : Centres d'intérêt + Certifications -->
+            <div class="cv-bottom-row">
+              <section class="cv-section cv-bottom-interests" aria-label="Centres d'intérêt">
+                <h2 class="cv-section-title">Centres d'intérêt</h2>
+                <p class="cv-simple">Musculation · Rugby · Volleyball · Mécanique<br>Moto · Randonnée · Nouvelles technologies</p>
+              </section>
+
+              <section class="cv-section cv-bottom-certif" aria-label="Certifications">
+                <h2 class="cv-section-title">Certifications</h2>
+                <p class="cv-simple">SecNum Académie, MOOC ANSSI (Cybersécurité)</p>
+              </section>
+            </div>
+
+          </div><!-- /cv-right -->
+
+        </div><!-- /cv-content-row -->
+
+      </div><!-- /cv-body -->
+    </div><!-- /cv-wrapper -->
+  </main>
+
+  <script src="common.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Maintenance Agent, Suite modulaire Windows</title>
+  <meta name="description" content="Maintenance Agent : suite modulaire PowerShell + React pour la maintenance et les diagnostics Windows. Architecture Setup_Script / Maintenance_Agent. Gabriel ROULON.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Maintenance Agent, Suite modulaire Windows",
+    "description": "Architecture d'une suite de maintenance Windows : Setup_Script, Maintenance_Agent, sécurité RBAC, frontend React.",
+    "author": { "@type": "Person", "name": "Gabriel ROULON" },
+    "inLanguage": "fr-FR",
+    "dateModified": "2026-02-19"
+  }
+  </script>
+  <style>
+    .page-header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .page-header h1 { font-size: 2em; margin-bottom: 6px; }
+    .page-header .subtitle { color: var(--text-secondary); font-size: 0.97em; }
+    .accordion-inner p { color: var(--text-secondary); }
+    .accordion-inner h3 { font-size: 1em; color: var(--text-secondary); font-weight: 500; margin: 16px 0 6px; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .page-tag { display: inline-block; font-size: 0.76em; font-weight: 500; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-radius: 3px; padding: 2px 10px; }
+    .page-badge-dev { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 3px; padding: 2px 10px; color: var(--text-secondary); border: 1px solid var(--border); }
+    .page-badge-dev::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 0.78em;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+    }
+
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .arch-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 18px;
+      transition: border-color 0.15s;
+    }
+    .arch-block:hover { border-color: var(--text-secondary); }
+    .arch-block-title {
+      font-size: 0.9em;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .arch-block-role {
+      font-size: 0.78em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .arch-block ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .arch-block ul li {
+      font-size: 0.82em;
+      color: var(--text-secondary);
+      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .arch-block ul li::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      transition: border-color 0.15s;
+    }
+    .module-card:hover { border-color: var(--text-secondary); }
+    .module-name {
+      font-size: 0.88em;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .module-desc {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .roadmap-list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      counter-reset: roadmap;
+    }
+    .roadmap-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.88em;
+      transition: border-color 0.15s;
+      counter-increment: roadmap;
+    }
+    .roadmap-item:hover { border-color: var(--text-secondary); }
+    .roadmap-item::before {
+      content: counter(roadmap);
+      font-weight: 700;
+      color: var(--text);
+      min-width: 20px;
+      flex-shrink: 0;
+    }
+    .roadmap-text { color: var(--text-secondary); }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+    .metric-label {
+      font-size: 0.78em;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .arch-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Chatbot panel -->
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Retour à l'accueil">
+        <span class="header-main">Présentation</span>
+        <span class="header-sub">Suite modulaire Windows, PowerShell, React, RBAC</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <button class="btn-chatbot"
+        data-summary="Maintenance Agent : suite modulaire de maintenance Windows, architecture finalisée, implémentation à venir.&#10;Contexte : automatiser la maintenance et les diagnostics des postes Windows (Active Directory, Windows Server).&#10;Architecture 2 couches : Setup_Script (orchestration, déploiement initial) et Maintenance_Agent (exécution runtime).&#10;6 modules : Admin, User, Shared, Backend, Scheduler, RemoteServer.&#10;Sécurité : signature Authenticode, RBAC par rôle, DPAPI pour les secrets locaux, TLS pour les échanges.&#10;Backend : API FastAPI Python pour les échanges entre le frontend et les agents de maintenance.&#10;Frontend : React + Vite + Tailwind (prévu), interfaces Admin et User distinctes.&#10;Statut : conception finalisée. Systèmes cibles : Windows Server, Active Directory."
+        aria-label="Ouvrir le résumé IA de la page">
+        Résumé IA
+      </button>
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
+          Navigation <span class="nav-arrow">&#9660;</span>
+        </button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="page-header">
+      <h1 class="sr-only">Maintenance Agent, IT Dashboard</h1>
+      <div class="page-meta">
+        <span class="page-tag">PowerShell</span>
+        <span class="page-tag">React / Vite</span>
+        <span class="page-tag">Windows</span>
+        <span class="page-badge-dev">En cours de conception</span>
+      </div>
+    </div>
+
+    <!-- Vue d'ensemble -->
+    <div class="accordion importance-high" id="acc-overview">
+      <button class="accordion-header" aria-controls="acc-overview-content">
+        Vue d'ensemble
+      </button>
+      <div class="accordion-content" id="acc-overview-content">
+        <div class="accordion-inner">
+          <div class="status-badge" aria-label="Statut du projet">
+            <span class="status-dot"></span>
+            En cours de conception
+          </div>
+          <p>Maintenance Agent est une suite modulaire destinée à fournir aux utilisateurs non-experts un outil de gestion, diagnostic et maintenance de postes Windows, tout en donnant à l'administrateur un contrôle avancé, centralisé et sécurisé.</p>
+          <p>Le projet combine un cœur PowerShell, une couche d'installation automatisée, une interface graphique React et un module optionnel de centralisation des logs.</p>
+          <div class="metric-row">
+            <div class="metric-card">
+              <span class="metric-val">2</span>
+              <span class="metric-label">couches d'architecture</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">8</span>
+              <span class="metric-label">modules runtime</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">88</span>
+              <span class="metric-label">fichiers générés</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">7</span>
+              <span class="metric-label">prompts fondateurs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture à deux couches -->
+    <div class="accordion importance-critical" id="acc-architecture">
+      <button class="accordion-header" aria-controls="acc-architecture-content">
+        Architecture à deux couches
+      </button>
+      <div class="accordion-content" id="acc-architecture-content">
+        <div class="accordion-inner">
+          <p>La séparation Setup_Script / Maintenance_Agent est le principe directeur du projet : l'orchestration ne se mélange jamais avec le runtime.</p>
+          <div class="arch-grid">
+            <div class="arch-block">
+              <div class="arch-block-role">Couche 1</div>
+              <div class="arch-block-title">Setup_Script</div>
+              <ul>
+                <li>Génère l'arborescence complète de Maintenance_Agent</li>
+                <li>Vérifie le manifest des templates signés</li>
+                <li>Applique les ACL et signe les fichiers</li>
+                <li>Écrit les logs d'installation</li>
+                <li>Prévient les exécutions simultanées via LockFiles</li>
+              </ul>
+            </div>
+            <div class="arch-block">
+              <div class="arch-block-role">Couche 2</div>
+              <div class="arch-block-title">Maintenance_Agent</div>
+              <ul>
+                <li>Scripts critiques Admin (audit, restore, verify)</li>
+                <li>Scripts utilisateur User (Defender, disque, réseau, MAJ)</li>
+                <li>Shared : logging, validation, helpers, intégrité</li>
+                <li>Backend sécurisé, Frontend React + Vite</li>
+                <li>Scheduler, RemoteServer optionnel</li>
+              </ul>
+            </div>
+          </div>
+          <p>Le flux d'installation est en 5 étapes : lancement de <code>install_project.ps1</code>, vérification du manifest, génération de l'arborescence, application des ACL, écriture du log d'installation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modules du runtime -->
+    <div class="accordion importance-high" id="acc-modules">
+      <button class="accordion-header" aria-controls="acc-modules-content">
+        Modules du runtime
+      </button>
+      <div class="accordion-content" id="acc-modules-content">
+        <div class="accordion-inner">
+          <p>Chaque module a un périmètre strict. Aucune dépendance circulaire : Admin ne dépend pas de User, User ne dépend pas d'Admin.</p>
+          <div class="module-grid">
+            <div class="module-card">
+              <div class="module-name">Admin</div>
+              <div class="module-desc">Audit sécurité, restauration système, vérification intégrité. Rôle admin requis.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">User</div>
+              <div class="module-desc">Windows Defender, disque, réseau, mises à jour. Accessible sans privilèges élevés.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">Shared</div>
+              <div class="module-desc">Logging, validation, helpers, vérification d'intégrité. Réutilisé par tous les modules.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">Backend</div>
+              <div class="module-desc">API sécurisée (TLS, CORS strict, RBAC). Valide token et rôle avant exécution.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">Frontend</div>
+              <div class="module-desc">Vite + React + Tailwind. Actions non-critiques UI, résultats en JSON.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">Scheduler</div>
+              <div class="module-desc">Tâches planifiées Windows via compte service limité. Idempotentes.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">RemoteServer</div>
+              <div class="module-desc">Module optionnel. Envoi logs chiffrés, transmission TLS, logs pseudonymisés.</div>
+            </div>
+            <div class="module-card">
+              <div class="module-name">Tests</div>
+              <div class="module-desc">Tests unitaires légers pour backend, frontend, réseau, système.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sécurité -->
+    <div class="accordion importance-high" id="acc-securite">
+      <button class="accordion-header" aria-controls="acc-securite-content">
+        Principes de sécurité
+      </button>
+      <div class="accordion-content" id="acc-securite-content">
+        <div class="accordion-inner">
+          <p>La sécurité est intégrée dès la conception, pas ajoutée après. Chaque point a été pensé avant d'écrire la première ligne de code.</p>
+          <div class="highlight">
+            <p>Les scripts critiques ne s'exécutent que s'ils sont signés (Authenticode) et situés sous <code>Maintenance_Agent</code>. Les secrets ne sont jamais lisibles en clair. Les opérations sensibles nécessitent rôle admin et confirmation explicite.</p>
+          </div>
+          <ul class="skills-list" style="margin-top: 14px;">
+            <li>Signatures Authenticode vérifiées au runtime</li>
+            <li>Secrets via DPAPI / CredentialManager / TPM</li>
+            <li>ACL restrictives appliquées à la création</li>
+            <li>Backend TLS + CORS strict + auth forte</li>
+            <li>RBAC Admin / User séparé</li>
+            <li>RemoteServer : logs pseudonymisés, transmission TLS</li>
+            <li>LockFiles pour prévenir exécutions concurrentes</li>
+            <li>Manifest SHA256 des templates signé</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roadmap -->
+    <div class="accordion importance-high" id="acc-roadmap">
+      <button class="accordion-header" aria-controls="acc-roadmap-content">
+        Roadmap
+      </button>
+      <div class="accordion-content" id="acc-roadmap-content">
+        <div class="accordion-inner">
+          <p>L'architecture est définie, la structure est générée. L'implémentation suit cet ordre pour maintenir la cohérence sécurité à chaque étape.</p>
+          <ol class="roadmap-list">
+            <li class="roadmap-item"><span class="roadmap-text">Valider <code>config.ps1</code> et <code>access_keys.ps1</code></span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Implémenter <code>install_project.ps1</code> : génération + vérification manifest signé</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Écrire Shared : logging, integrity_check, validation avec conventions de logs</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Créer les templates signés et générer le manifest SHA256</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Développer le backend minimal sécurisé (routes whitelist)</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Développer le frontend skeleton React + Vite + Tailwind</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Intégrer le module optionnel RemoteServer</span></li>
+            <li class="roadmap-item"><span class="roadmap-text">Tests automatiques et revue sécurité complète</span></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Démarche de démonstration technique et académique 2026</p>
+  </footer>
+
+  <script src="common.js" defer></script>
+</body>
+</html>

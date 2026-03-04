@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Simulation PEA, dashboard analytique</title>
+  <meta name="description" content="Dashboard de simulation PEA v2.1, outil autonome de projection financière. Rendements ajustables par profil (1–25 %). Capitalisation mensuelle AMF/MiFID II. 10 panneaux analytiques.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* === DASHBOARD OVERRIDES === */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: calc(var(--header-h) + 24px) clamp(12px, 3vw, 32px) 48px;
+    }
+
+    /* === PARAMÈTRES === */
+    .dash-params {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 22px 14px;
+      margin-bottom: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: 20px 20px;
+      align-items: end;
+      position: sticky;
+      top: var(--header-h);
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .dash-params-sep {
+      grid-column: 1 / -1;
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0 0;
+    }
+    .params-taux-label {
+      grid-column: 1 / -1;
+      font-size: 0.71em;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding-bottom: 2px;
+    }
+    .params-taux-row {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      align-items: end;
+    }
+    .param-label.label-sec { color: #1a7a3a; font-weight: 600; }
+    .param-label.label-eq  { color: var(--blue); font-weight: 600; }
+    .param-label.label-dyn { color: var(--red); font-weight: 600; }
+    .param-item input[type="range"].range-sec { accent-color: #1a7a3a; }
+    .param-item input[type="range"].range-eq  { accent-color: var(--blue); }
+    .param-item input[type="range"].range-dyn { accent-color: var(--red); }
+    @media (max-width: 768px) { .dash-params { grid-template-columns: 1fr 1fr; } .params-taux-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .dash-params { grid-template-columns: 1fr; } .params-taux-row { grid-template-columns: 1fr; } }
+    .param-label { font-size: 0.76em; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px; }
+    .param-val   { font-size: 1.1em; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+    .param-item input[type="range"] { width: 100%; accent-color: var(--blue); cursor: pointer; }
+    .param-minmax { display: flex; justify-content: space-between; font-size: 0.7em; color: var(--text-secondary); margin-top: 2px; }
+    .btn-reset {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.78em;
+      color: var(--text-secondary);
+      background: transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+      align-self: center;
+    }
+    .btn-reset:hover { border-color: var(--text-secondary); color: var(--text); }
+
+    /* === NOTE MÉTHODOLOGIQUE === */
+    .dash-method {
+      font-size: 0.74em;
+      color: var(--text-secondary);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 4px 4px 0;
+      padding: 8px 14px;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+    .dash-method strong { color: var(--text); }
+
+    /* === GRILLE DASHBOARD === */
+    .dash-row   { display: grid; gap: 16px; margin-bottom: 16px; }
+    .dash-row-1 { grid-template-columns: 1fr; }
+    .dash-row-2 { grid-template-columns: 1fr 1fr; }
+    .dash-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+    @media (max-width: 1000px) { .dash-row-3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 680px)  { .dash-row-2, .dash-row-3 { grid-template-columns: 1fr; } }
+
+    /* === PANNEAUX === */
+    .dash-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .dash-panel-hd {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .panel-title { font-size: 0.88em; font-weight: 700; color: var(--text); }
+    .panel-tag {
+      font-size: 0.68em;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-live   { background: rgba(37,99,235,0.1); color: var(--blue); border: 1px solid rgba(37,99,235,0.25); }
+    .tag-static { background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border); }
+    .tag-warn   { background: rgba(230,57,70,0.08); color: var(--red); border: 1px solid rgba(230,57,70,0.25); }
+    .dash-panel-body { padding: 16px 18px; }
+
+    /* === KPI CARDS === */
+    .kpi-card {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--border);
+      padding: 18px 20px;
+      background: var(--bg);
+    }
+    .kpi-card.kpi-sec { border-top-color: #1a7a3a; }
+    .kpi-card.kpi-eq  { border-top-color: var(--blue); }
+    .kpi-card.kpi-dyn { border-top-color: var(--red); }
+    .kpi-name { font-size: 0.8em; font-weight: 700; margin-bottom: 2px; }
+    .kpi-sec .kpi-name { color: #1a7a3a; }
+    .kpi-eq  .kpi-name { color: var(--blue); }
+    .kpi-dyn .kpi-name { color: var(--red); }
+    .kpi-rate { font-size: 0.72em; color: var(--text-secondary); margin-bottom: 12px; }
+    .kpi-vf   { font-size: 2.2em; font-weight: 800; color: var(--text); line-height: 1.1; }
+    .kpi-sub  { font-size: 0.76em; color: var(--text-secondary); margin-top: 6px; }
+    .kpi-sub span { font-weight: 600; color: var(--text); }
+    .kpi-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; margin: 10px 0 4px; }
+    .kpi-bar-fill { height: 4px; border-radius: 2px; width: 0; transition: width 0.35s ease; }
+    .kpi-sec .kpi-bar-fill { background: #1a7a3a; }
+    .kpi-eq  .kpi-bar-fill { background: var(--blue); }
+    .kpi-dyn .kpi-bar-fill { background: var(--red); }
+
+    /* === TABLES === */
+    .sim-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+    .sim-table th {
+      padding: 9px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg-card);
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .sim-table th:not(:first-child) { text-align: right; }
+    .sim-table td {
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .sim-table td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+    .sim-table tr:last-child td { border-bottom: none; }
+    .sim-table tr:hover td { background: var(--bg-secondary); }
+    .row-hl td { font-weight: 700; color: var(--text); background: rgba(37,99,235,0.04); }
+    .row-lbl td:first-child { color: var(--text); font-weight: 500; }
+    .th-sec { color: #1a7a3a !important; }
+    .th-eq  { color: var(--blue) !important; }
+    .th-dyn { color: var(--red) !important; }
+
+    /* Badges score */
+    .badge { display: inline-block; padding: 2px 9px; border-radius: 3px; font-size: 0.8em; font-weight: 700; }
+    .badge-g { background: rgba(26,122,58,0.1);  color: #1a7a3a;  border: 1px solid rgba(26,122,58,0.25); }
+    .badge-b { background: rgba(37,99,235,0.1);  color: var(--blue); border: 1px solid rgba(37,99,235,0.25); }
+    .badge-o { background: rgba(217,119,6,0.1);  color: #b45309;  border: 1px solid rgba(217,119,6,0.25); }
+    .badge-r { background: rgba(230,57,70,0.1);  color: var(--red);  border: 1px solid rgba(230,57,70,0.25); }
+
+    /* Overflow wrap pour grandes tables */
+    .tbl-wrap { overflow-x: auto; }
+
+    /* Progression annuelle — scroll interne */
+    .prog-wrap { max-height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 4px; }
+    .prog-wrap .sim-table tr:last-child td { border-bottom: 1px solid var(--border); }
+    .prog-wrap .sim-table th { position: sticky; top: 0; z-index: 2; }
+    .row-double td { background: rgba(37,99,235,0.06); }
+    .row-double td:first-child::after { content: " ×2"; font-size: 0.7em; color: var(--blue); font-weight: 700; }
+
+    /* Matrice sensibilité */
+    .mat-cell-sec { background: rgba(26,122,58,0.12);  color: #1a7a3a;  font-weight: 700; }
+    .mat-cell-eq  { background: rgba(37,99,235,0.12);  color: var(--blue); font-weight: 700; }
+    .mat-cell-dyn { background: rgba(230,57,70,0.12);  color: var(--red);  font-weight: 700; }
+    .mat-col-cur  { background: rgba(37,99,235,0.04); }
+    .sim-table .mat-row-sec td { border-left: 3px solid #1a7a3a; }
+    .sim-table .mat-row-eq  td { border-left: 3px solid var(--blue); }
+    .sim-table .mat-row-dyn td { border-left: 3px solid var(--red); }
+
+    /* Stress input */
+    .stress-input {
+      width: 60px; padding: 3px 6px;
+      border: 1px solid var(--border); border-radius: 3px;
+      font-size: 0.8em; color: var(--text); background: var(--bg-card);
+      text-align: right;
+    }
+    .stress-input:focus { outline: 2px solid var(--blue); border-color: var(--blue); }
+
+    /* Navigation rapide */
+    .dash-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .dash-nav a {
+      font-size: 0.72em;
+      padding: 4px 11px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      background: var(--bg);
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .dash-nav a:hover { background: var(--bg-secondary); border-color: var(--text-secondary); color: var(--text); }
+
+    /* Toggle progression */
+    .prog-toggle { display: flex; gap: 6px; margin-bottom: 10px; }
+    .prog-btn {
+      font-size: 0.76em;
+      padding: 4px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .prog-btn:hover { border-color: var(--text-secondary); color: var(--text); }
+    .prog-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+
+    /* Note bas de panel */
+    .panel-note {
+      font-size: 0.76em; color: var(--text-secondary);
+      margin-top: 12px; padding: 8px 12px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 4px; line-height: 1.6;
+    }
+
+    /* Barres composition */
+    .bar-w { background: var(--border); border-radius: 2px; height: 5px; margin: 3px 0 7px; }
+    .bar-f  { height: 5px; border-radius: 2px; }
+    .bar-blue { background: var(--blue); }
+    .bar-red  { background: var(--red); }
+
+    /* Compo grid (robustesse) */
+    .compo-row { display: flex; justify-content: space-between; font-size: 0.78em; margin-bottom: 2px; }
+    .compo-lbl { color: var(--text-secondary); }
+    .compo-val { font-weight: 600; color: var(--text); }
+    .compo-titres { font-size: 0.73em; color: var(--text-secondary); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); line-height: 1.6; }
+    .profils-compo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+    @media (max-width: 680px) { .profils-compo-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Chatbot panel -->
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Retour à l'accueil">
+        <span class="header-main">Présentation</span>
+        <span class="header-sub">Dashboard Simulation PEA v2.1, analyse institutionnelle</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <button class="btn-chatbot"
+        data-summary="Simulation PEA interactive v2.1 : 10 panneaux analytiques, 3 profils, curseurs ajustables.&#10;KPI principaux : capital final, plus-value, rendement moyen, multiplicateur, comparaison Livret A 2,4 %.&#10;Projections sur 5, 10 et 25 ans. Capitalisation mensuelle, norme AMF/MiFID II.&#10;Rendements ajustables : Sécuritaire 1-15 %, Équilibré 1-20 %, Dynamique 1-25 % (défaut : 5/7/10 %).&#10;Matrice sensibilité : rendement x durée, légende dynamique par profil. Distribution des gains par profil.&#10;Stress tests : scénarios de crise 2000, 2008, 2020. Livret A 2,4 %. Inflation 2,0 % (cible BCE).&#10;10 ancres de navigation rapide. Remise à zéro complète (capital, versement, durée, taux, stress).&#10;Référentiel méthodologique : PEA_V2_PRO.html. Composition des profils fixée. Valeurs indicatives."
+        aria-label="Ouvrir le résumé IA de la page">
+        Résumé IA
+      </button>
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
+          Navigation <span class="nav-arrow">&#9660;</span>
+        </button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem" aria-current="page">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
+          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <h1 class="sr-only">Dashboard Simulation PEA, 3 profils de portefeuille</h1>
+
+    <!-- PARAMÈTRES -->
+    <div class="dash-params" role="region" aria-labelledby="params-lbl">
+      <span id="params-lbl" class="sr-only">Paramètres de simulation</span>
+      <div class="param-item">
+        <div class="param-label">Capital initial</div>
+        <div class="param-val" id="d-cap">5 000 €</div>
+        <input type="range" id="i-cap" min="1000" max="50000" step="500" value="5000"
+               aria-label="Capital initial" oninput="refresh()">
+        <div class="param-minmax"><span>1 k€</span><span>50 k€</span></div>
+      </div>
+      <div class="param-item">
+        <div class="param-label">Versement mensuel</div>
+        <div class="param-val" id="d-ver">200 €/mois</div>
+        <input type="range" id="i-ver" min="50" max="1000" step="50" value="200"
+               aria-label="Versement mensuel" oninput="refresh()">
+        <div class="param-minmax"><span>50 €</span><span>1 000 €</span></div>
+      </div>
+      <div class="param-item">
+        <div class="param-label">Durée</div>
+        <div class="param-val" id="d-dur">25 ans</div>
+        <input type="range" id="i-dur" min="5" max="30" step="1" value="25"
+               aria-label="Durée en années" oninput="refresh()">
+        <div class="param-minmax"><span>5 ans</span><span>30 ans</span></div>
+      </div>
+      <button class="btn-reset" onclick="resetAll()" type="button"
+              aria-label="Réinitialiser aux valeurs par défaut">
+        Réinitialiser<br><small>5 k€ · 200 € · 25 ans<br>5 % · 7 % · 10 %</small>
+      </button>
+
+      <hr class="dash-params-sep" aria-hidden="true">
+      <div class="params-taux-label">Rendements par profil</div>
+      <div class="params-taux-row">
+        <div class="param-item">
+          <div class="param-label label-sec">Taux Sécuritaire</div>
+          <div class="param-val" id="d-ts" style="color:#1a7a3a">5,0 % / an</div>
+          <input type="range" id="i-ts" class="range-sec" min="1" max="15" step="0.5" value="5"
+                 aria-label="Taux de rendement Sécuritaire" oninput="refresh()">
+          <div class="param-minmax"><span>1 %</span><span>15 %</span></div>
+        </div>
+        <div class="param-item">
+          <div class="param-label label-eq">Taux Équilibré</div>
+          <div class="param-val" id="d-te" style="color:var(--blue)">7,0 % / an</div>
+          <input type="range" id="i-te" class="range-eq" min="1" max="20" step="0.5" value="7"
+                 aria-label="Taux de rendement Équilibré" oninput="refresh()">
+          <div class="param-minmax"><span>1 %</span><span>20 %</span></div>
+        </div>
+        <div class="param-item">
+          <div class="param-label label-dyn">Taux Dynamique</div>
+          <div class="param-val" id="d-td" style="color:var(--red)">10,0 % / an</div>
+          <input type="range" id="i-td" class="range-dyn" min="1" max="25" step="0.5" value="10"
+                 aria-label="Taux de rendement Dynamique" oninput="refresh()">
+          <div class="param-minmax"><span>1 %</span><span>25 %</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTE MÉTHODOLOGIQUE -->
+    <div class="dash-method" role="note">
+      <strong>Méthodologie :</strong> Capitalisation mensuelle — taux mensuel r<sub>m</sub> = (1+r<sub>a</sub>)<sup>1/12</sup> − 1 (taux équivalent, norme AMF / MiFID II). Formule : VF = C × (1+r<sub>m</sub>)<sup>12n</sup> + PMT × [(1+r<sub>m</sub>)<sup>12n</sup> − 1] / r<sub>m</sub>. Performance annualisée = CAGR du capital total investi. Inflation 2,0 % (cible BCE). TER appliqué à la fraction ETF uniquement. Livret A 2,4 % (taux en vigueur depuis le 1er février 2025). Valeurs indicatives, non contractuelles.
+    </div>
+
+    <!-- NAVIGATION RAPIDE -->
+    <nav class="dash-nav" aria-label="Navigation panneaux">
+      <a href="#panel-kpi">KPI</a>
+      <a href="#panel-proj">Projections</a>
+      <a href="#panel-dist">Gains</a>
+      <a href="#panel-ter">TER</a>
+      <a href="#panel-prog">Progression</a>
+      <a href="#panel-matrix">Sensibilité</a>
+      <a href="#panel-inf">Inflation</a>
+      <a href="#panel-la">Livret A</a>
+      <a href="#panel-stress">Stress</a>
+      <a href="#panel-profils">Profils</a>
+    </nav>
+
+    <!-- KPI : 3 CARTES VALEUR FUTURE -->
+    <div id="panel-kpi" class="dash-row dash-row-3" role="region" aria-label="Valeurs futures par profil">
+      <div class="kpi-card kpi-sec">
+        <div class="kpi-name">Sécuritaire</div>
+        <div class="kpi-rate" id="kpi-rate-s">—</div>
+        <div class="kpi-vf" id="kpi-vf-s">—</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar-fill" id="kpi-bar-s"></div></div>
+        <div class="kpi-sub">Gain net <span id="kpi-gain-s">—</span></div>
+        <div class="kpi-sub">×&nbsp;<span id="kpi-mult-s">—</span>&nbsp;l'investi</div>
+        <div class="kpi-sub">CAGR investi <span id="kpi-cagr-s">—</span></div>
+      </div>
+      <div class="kpi-card kpi-eq">
+        <div class="kpi-name">Équilibré</div>
+        <div class="kpi-rate" id="kpi-rate-e">—</div>
+        <div class="kpi-vf" id="kpi-vf-e">—</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar-fill" id="kpi-bar-e"></div></div>
+        <div class="kpi-sub">Gain net <span id="kpi-gain-e">—</span></div>
+        <div class="kpi-sub">×&nbsp;<span id="kpi-mult-e">—</span>&nbsp;l'investi</div>
+        <div class="kpi-sub">CAGR investi <span id="kpi-cagr-e">—</span></div>
+      </div>
+      <div class="kpi-card kpi-dyn">
+        <div class="kpi-name">Dynamique</div>
+        <div class="kpi-rate" id="kpi-rate-d">—</div>
+        <div class="kpi-vf" id="kpi-vf-d">—</div>
+        <div class="kpi-bar-wrap"><div class="kpi-bar-fill" id="kpi-bar-d"></div></div>
+        <div class="kpi-sub">Gain net <span id="kpi-gain-d">—</span></div>
+        <div class="kpi-sub">×&nbsp;<span id="kpi-mult-d">—</span>&nbsp;l'investi</div>
+        <div class="kpi-sub">CAGR investi <span id="kpi-cagr-d">—</span></div>
+      </div>
+    </div>
+
+    <!-- PROJECTIONS -->
+    <div class="dash-row dash-row-1">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-proj">Projections détaillées, 3 profils</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Projections des 3 profils">
+              <thead>
+                <tr>
+                  <th>Métrique</th>
+                  <th class="th-sec">Sécuritaire</th>
+                  <th class="th-eq">Équilibré</th>
+                  <th class="th-dyn">Dynamique</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="row-lbl"><td>Capital initial</td><td id="p-cap-s"></td><td id="p-cap-e"></td><td id="p-cap-d"></td></tr>
+                <tr><td>Versement mensuel</td><td id="p-vm-s"></td><td id="p-vm-e"></td><td id="p-vm-d"></td></tr>
+                <tr><td>Rendement annuel (actif)</td><td id="p-r-s">5,00 %</td><td id="p-r-e">7,00 %</td><td id="p-r-d">10,00 %</td></tr>
+                <tr><td>Taux mensuel équivalent r<sub>m</sub></td><td id="p-rm-s">0,4074 %</td><td id="p-rm-e">0,5654 %</td><td id="p-rm-d">0,7974 %</td></tr>
+                <tr><td>Durée</td><td id="p-dur-s"></td><td id="p-dur-e"></td><td id="p-dur-d"></td></tr>
+                <tr><td>Nombre de mensualités</td><td id="p-nm-s"></td><td id="p-nm-e"></td><td id="p-nm-d"></td></tr>
+                <tr><td>Montant total investi</td><td id="p-inv-s"></td><td id="p-inv-e"></td><td id="p-inv-d"></td></tr>
+                <tr><td>VF capital seul</td><td id="p-vc-s"></td><td id="p-vc-e"></td><td id="p-vc-d"></td></tr>
+                <tr><td>VF versements</td><td id="p-vv-s"></td><td id="p-vv-e"></td><td id="p-vv-d"></td></tr>
+                <tr class="row-hl"><td>Valeur future totale</td><td id="p-vt-s"></td><td id="p-vt-e"></td><td id="p-vt-d"></td></tr>
+                <tr><td>Gain net</td><td id="p-gn-s"></td><td id="p-gn-e"></td><td id="p-gn-d"></td></tr>
+                <tr><td>Multiplicateur (VF / Investi)</td><td id="p-mx-s"></td><td id="p-mx-e"></td><td id="p-mx-d"></td></tr>
+                <tr><td>CAGR du capital total investi</td><td id="p-cg-s"></td><td id="p-cg-e"></td><td id="p-cg-d"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            CAGR du capital total investi : (VF / Investi)<sup>1/n</sup> − 1. Différent du rendement de l'actif (5/7/10 %) car les versements sont capitalisés sur des durées variables. Le taux mensuel r<sub>m</sub> = (1+r<sub>a</sub>)<sup>1/12</sup> − 1 est le taux équivalent (norme AMF), supérieur au taux proportionnel r/12 utilisé dans certains outils.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DISTRIBUTION DES GAINS + IMPACT TER -->
+    <div class="dash-row dash-row-2">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-dist">Distribution des gains</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Distribution des gains par profil">
+              <thead>
+                <tr><th>Composante</th><th class="th-sec">Sécu.</th><th class="th-eq">Équil.</th><th class="th-dyn">Dyn.</th></tr>
+              </thead>
+              <tbody>
+                <tr class="row-lbl"><td>Capital initial</td><td id="dg-cap-s"></td><td id="dg-cap-e"></td><td id="dg-cap-d"></td></tr>
+                <tr><td>Versements nets</td><td id="dg-ver-s"></td><td id="dg-ver-e"></td><td id="dg-ver-d"></td></tr>
+                <tr class="row-hl"><td>Intérêts composés</td><td id="dg-int-s"></td><td id="dg-int-e"></td><td id="dg-int-d"></td></tr>
+                <tr><td>% intérêts / VF</td><td id="dg-pct-s"></td><td id="dg-pct-e"></td><td id="dg-pct-d"></td></tr>
+                <tr><td>% capital+vers. / VF</td><td id="dg-pci-s"></td><td id="dg-pci-e"></td><td id="dg-pci-d"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            Intérêts composés = VF − Capital − Versements nets. Plus la durée est longue, plus la part des intérêts composés domine (effet boule de neige).
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-ter">Impact des frais ETF (TER)</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Impact TER par profil">
+              <thead>
+                <tr><th>Profil</th><th>TER port.</th><th>VF brute</th><th>VF nette TER</th><th>Coût TER</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="th-sec" style="font-weight:600">Sécuritaire</td>
+                  <td>0,12 %</td>
+                  <td id="ter-br-s"></td><td id="ter-nt-s"></td><td id="ter-ct-s"></td>
+                </tr>
+                <tr>
+                  <td class="th-eq" style="font-weight:600">Équilibré</td>
+                  <td>0,088 %</td>
+                  <td id="ter-br-e"></td><td id="ter-nt-e"></td><td id="ter-ct-e"></td>
+                </tr>
+                <tr>
+                  <td class="th-dyn" style="font-weight:600">Dynamique</td>
+                  <td>0,108 %</td>
+                  <td id="ter-br-d"></td><td id="ter-nt-d"></td><td id="ter-ct-d"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            TER portfolio = fraction ETF × TER moyen des ETF. Sécu : WPEA 60 % × 0,20 %. Équil. : WPEA 25 % × 0,20 % + PE500 25 % × 0,15 %. Dyn. : PANX 25 % × 0,23 % + PAEEM 25 % × 0,20 %. Formule : r_net = r_brut − TER_portfolio.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESSION ANNUELLE -->
+    <div class="dash-row dash-row-1">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-prog">Progression annuelle, valeur du portefeuille</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="prog-toggle" role="group" aria-label="Pas d'affichage">
+            <button class="prog-btn active" id="btn-prog-1" onclick="setProgStep(1)">Annuel</button>
+            <button class="prog-btn" id="btn-prog-5" onclick="setProgStep(5)">Tous les 5 ans</button>
+          </div>
+          <div class="tbl-wrap">
+            <div class="prog-wrap">
+              <table class="sim-table" id="prog-table" aria-label="Progression annuelle">
+                <thead>
+                  <tr>
+                    <th>An</th>
+                    <th>Investi</th>
+                    <th class="th-sec">VF Sécu.</th>
+                    <th class="th-sec">Gain Sécu.</th>
+                    <th class="th-eq">VF Équil.</th>
+                    <th class="th-eq">Gain Équil.</th>
+                    <th class="th-dyn">VF Dyn.</th>
+                    <th class="th-dyn">Gain Dyn.</th>
+                  </tr>
+                </thead>
+                <tbody id="prog-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel-note">
+            Ligne <strong>bleue</strong> = année où VF &ge; 2 × Investi (doublement du capital total). Calcul mensuel : VF<sub>k</sub> = C × (1+r<sub>m</sub>)<sup>12k</sup> + PMT × [(1+r<sub>m</sub>)<sup>12k</sup> − 1] / r<sub>m</sub>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATRICE SENSIBILITÉ -->
+    <div class="dash-row dash-row-1">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-matrix">Matrice de sensibilité, rendement × durée</span>
+          <span class="panel-tag tag-live">Live (capital + versement)</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" id="mat-table" aria-label="Matrice de sensibilité rendement × durée">
+              <thead id="mat-head"></thead>
+              <tbody id="mat-body"></tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            Cellules colorées = profils actuels (<span class="th-sec" id="mx-leg-s">Sécu. 5 %</span>, <span class="th-eq" id="mx-leg-e">Équil. 7 %</span>, <span class="th-dyn" id="mx-leg-d">Dyn. 10 %</span>). Colonne encadrée = durée sélectionnée. Valeurs en k€ (milliers d'euros). Hors fiscalité et TER.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFLATION + LIVRET A -->
+    <div class="dash-row dash-row-2">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-inf">Ajustement inflation (pouvoir d'achat)</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Ajustement inflation">
+              <thead>
+                <tr><th>Profil</th><th>VF nominale</th><th>VF réelle (2 %/an)</th><th>Perte pouvoir d'achat</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="th-sec" style="font-weight:600">Sécuritaire</td>
+                  <td id="inf-nom-s"></td><td id="inf-ree-s"></td><td id="inf-per-s"></td>
+                </tr>
+                <tr>
+                  <td class="th-eq" style="font-weight:600">Équilibré</td>
+                  <td id="inf-nom-e"></td><td id="inf-ree-e"></td><td id="inf-per-e"></td>
+                </tr>
+                <tr>
+                  <td class="th-dyn" style="font-weight:600">Dynamique</td>
+                  <td id="inf-nom-d"></td><td id="inf-ree-d"></td><td id="inf-per-d"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            VF réelle = VF nominale / (1,02)<sup>n</sup> (méthode de déflation AMF). Inflation 2,0 % = cible BCE long terme. La VF réelle exprime le pouvoir d'achat équivalent en euros d'aujourd'hui.
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-la">Comparaison Livret A (2,4 %, taux fév. 2025)</span>
+          <span class="panel-tag tag-live">Live</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Comparaison Livret A">
+              <thead>
+                <tr><th>Métr.</th><th>Livret A</th><th class="th-sec">Sécu.</th><th class="th-eq">Équil.</th><th class="th-dyn">Dyn.</th></tr>
+              </thead>
+              <tbody>
+                <tr class="row-lbl"><td>Taux</td><td>2,4 %</td><td>5,0 %</td><td>7,0 %</td><td>10,0 %</td></tr>
+                <tr class="row-hl"><td>VF totale</td><td id="la-vf"></td><td id="la-s"></td><td id="la-e"></td><td id="la-d"></td></tr>
+                <tr><td>Gain vs Livret A</td><td>—</td><td id="la-gs"></td><td id="la-ge"></td><td id="la-gd"></td></tr>
+                <tr><td>Ratio VF / LA</td><td>1,00×</td><td id="la-rs"></td><td id="la-re"></td><td id="la-rd"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            Livret A : taux en vigueur depuis le 1er février 2025 (arrêté ministériel, formule BdF). Plafond 22 950 €, non applicable pour des versements cumulés supérieurs. Le Livret A offre liquidité immédiate et garantie d'État ; les ETF comportent un risque de perte en capital. Ces deux instruments ne sont pas comparables en termes de risque.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STRESS TESTS -->
+    <div class="dash-row dash-row-1">
+      <div class="dash-panel">
+        <div class="dash-panel-hd">
+          <span class="panel-title" id="panel-stress">Scénarios de stress</span>
+          <span class="panel-tag tag-warn">Analyse de risque</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="tbl-wrap">
+            <table class="sim-table" aria-label="Scénarios de stress">
+              <thead>
+                <tr>
+                  <th>Profil</th>
+                  <th>Défavorable (r − 30 pp)</th>
+                  <th>Intermédiaire (neutre)</th>
+                  <th>Favorable (r + 30 pp)</th>
+                  <th>Manuel (pp)</th>
+                  <th>Résultat manuel</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="th-sec" style="font-weight:600">Sécuritaire</td>
+                  <td id="st-d-s"></td><td id="st-n-s"></td><td id="st-f-s"></td>
+                  <td><input class="stress-input" type="number" id="st-m-s" value="0" min="-90" max="90"
+                             aria-label="Coefficient manuel Sécuritaire" oninput="updateManuel()"></td>
+                  <td id="st-r-s"></td>
+                </tr>
+                <tr>
+                  <td class="th-eq" style="font-weight:600">Équilibré</td>
+                  <td id="st-d-e"></td><td id="st-n-e"></td><td id="st-f-e"></td>
+                  <td><input class="stress-input" type="number" id="st-m-e" value="0" min="-90" max="90"
+                             aria-label="Coefficient manuel Équilibré" oninput="updateManuel()"></td>
+                  <td id="st-r-e"></td>
+                </tr>
+                <tr>
+                  <td class="th-dyn" style="font-weight:600">Dynamique</td>
+                  <td id="st-d-d"></td><td id="st-n-d"></td><td id="st-f-d"></td>
+                  <td><input class="stress-input" type="number" id="st-m-d" value="0" min="-90" max="90"
+                             aria-label="Coefficient manuel Dynamique" oninput="updateManuel()"></td>
+                  <td id="st-r-d"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note">
+            Scénarios en points de pourcentage (pp) appliqués au rendement nominal : défavorable (r − 30 pp), favorable (r + 30 pp). Un taux négatif résultant est accepté dans le calcul. <strong>Note réglementaire :</strong> la norme PRIIPS (règlement EU 1286/2014) impose 4 scénarios calculés sur distributions historiques de rendements (favorable P90, intermédiaire P50, défavorable P10, stress). L'implémentation PRIIPS complète nécessite des séries de données historiques non disponibles ici.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILS DE RÉFÉRENCE -->
+    <div class="dash-row dash-row-1">
+      <div class="dash-panel" id="panel-profils">
+        <div class="dash-panel-hd">
+          <span class="panel-title">Profils de référence, composition &amp; risque</span>
+          <span class="panel-tag tag-static">Fixe</span>
+        </div>
+        <div class="dash-panel-body">
+          <div class="panel-note" style="margin-bottom:16px">
+            Les compositions ci-dessous sont les points de départ recommandés. Les rendements sont ajustables via les curseurs ; la composition reste fixe.
+          </div>
+          <!-- Barres composition — 3 profils côte à côte -->
+          <div class="profils-compo-grid">
+            <!-- Sécu -->
+            <div>
+              <div style="font-size:0.82em;font-weight:700;color:#1a7a3a;margin-bottom:8px">Sécuritaire <span class="badge badge-g">Score 78/100</span></div>
+              <div class="compo-row"><span class="compo-lbl">ETF</span><span class="compo-val">60 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-blue" style="width:60%"></div></div>
+              <div class="compo-row"><span class="compo-lbl">Actions</span><span class="compo-val">40 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-red" style="width:40%"></div></div>
+              <div class="compo-row" style="margin-top:6px"><span class="compo-lbl">Exposition US</span><span class="compo-val">60 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Europe</span><span class="compo-val">40 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Tech / Émergents</span><span class="compo-val">0 % / 0 %</span></div>
+              <div class="compo-titres">WPEA (IE000Y7K78Z9) · Air Liquide · Sanofi</div>
+            </div>
+            <!-- Équilibré -->
+            <div>
+              <div style="font-size:0.82em;font-weight:700;color:var(--blue);margin-bottom:8px">Équilibré <span class="badge badge-o">Score 74,4/100</span></div>
+              <div class="compo-row"><span class="compo-lbl">ETF</span><span class="compo-val">50 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-blue" style="width:50%"></div></div>
+              <div class="compo-row"><span class="compo-lbl">Actions</span><span class="compo-val">50 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-red" style="width:50%"></div></div>
+              <div class="compo-row" style="margin-top:6px"><span class="compo-lbl">Exposition US</span><span class="compo-val">40 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Europe</span><span class="compo-val">50 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Tech / Émergents</span><span class="compo-val">0 % / 3 %</span></div>
+              <div class="compo-titres">WPEA · Amundi S&amp;P 500 PEA (PE500) · Thales · Air Liquide · Sanofi</div>
+            </div>
+            <!-- Dynamique -->
+            <div>
+              <div style="font-size:0.82em;font-weight:700;color:var(--red);margin-bottom:8px">Dynamique <span class="badge badge-o">Score 60/100</span></div>
+              <div class="compo-row"><span class="compo-lbl">ETF</span><span class="compo-val">50 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-blue" style="width:50%"></div></div>
+              <div class="compo-row"><span class="compo-lbl">Actions</span><span class="compo-val">50 %</span></div>
+              <div class="bar-w"><div class="bar-f bar-red" style="width:50%"></div></div>
+              <div class="compo-row" style="margin-top:6px"><span class="compo-lbl">Exposition US</span><span class="compo-val">25 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Europe</span><span class="compo-val">50 %</span></div>
+              <div class="compo-row"><span class="compo-lbl">Tech / Émergents</span><span class="compo-val">50 % / 25 %</span></div>
+              <div class="compo-titres">Dassault Systèmes · Sartorius Stedim Biotech · Amundi Nasdaq-100 PEA (PANX) · Amundi MSCI EM PEA (PAEEM)</div>
+            </div>
+          </div>
+          <!-- Tableau des risques -->
+          <div style="font-size:0.8em;font-weight:600;color:var(--text);margin-bottom:8px">Tableau des risques</div>
+          <div class="tbl-wrap">
+            <table class="sim-table">
+              <thead>
+                <tr><th>Profil</th><th>ETF</th><th>Act.</th><th>Tech</th><th>US</th><th>EU</th><th>EM</th><th>Score risque</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="th-sec" style="font-weight:600">Sécu.</td><td>60</td><td>40</td><td>0</td><td>60</td><td>40</td><td>0</td><td><span class="badge badge-g">37,1</span></td></tr>
+                <tr><td class="th-eq" style="font-weight:600">Équil.</td><td>50</td><td>50</td><td>0</td><td>40</td><td>50</td><td>3</td><td><span class="badge badge-g">34,7</span></td></tr>
+                <tr><td class="th-dyn" style="font-weight:600">Dyn.</td><td>50</td><td>50</td><td>50</td><td>25</td><td>50</td><td>25</td><td><span class="badge badge-o">42,9</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="panel-note" style="margin-top:10px">
+            Score risque : indice global, bas = risque plus faible. Référentiel : <a href="PEA_V2_PRO.html" style="color:inherit;text-decoration:underline">PEA_V2_PRO.html</a>. Compositions fixées, indépendantes des curseurs de rendement.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Démarche de démonstration technique et académique 2026</p>
+    <p style="font-size:0.78em;margin-top:6px">Référentiel méthodologique : <a href="PEA_V2_PRO.html" style="color:inherit;text-decoration:underline">PEA_V2_PRO.html</a></p>
+  </footer>
+
+  <script src="common.js" defer></script>
+  <script>
+    // ============================================================
+    // CONSTANTES
+    // ============================================================
+    var IDS    = ['s', 'e', 'd'];
+    var TER    = [0.0012, 0.000875, 0.001075]; // TER pondéré par fraction ETF
+    var INF    = 0.02;   // Inflation cible BCE
+    var LA     = 0.024;  // Livret A depuis 01/02/2025
+    var MAT_R  = [0.02, 0.03, 0.05, 0.07, 0.10, 0.12, 0.15];
+    var MAT_D  = [5, 10, 15, 20, 25, 30];
+    var TAUX_DEF = [5, 7, 10]; // valeurs par défaut en %
+    var progStep = 1;          // pas d'affichage progression (1 = annuel, 5 = quinquennal)
+
+    // ============================================================
+    // LECTURE DES TAUX (dynamique)
+    // ============================================================
+    function getTaux() {
+      return [
+        parseFloat(document.getElementById('i-ts').value) / 100,
+        parseFloat(document.getElementById('i-te').value) / 100,
+        parseFloat(document.getElementById('i-td').value) / 100
+      ];
+    }
+
+    // ============================================================
+    // UTILITAIRES
+    // ============================================================
+    function eur(v) {
+      return v.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    }
+    function eurDec(v) {
+      return v.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+    }
+    function pct(v, dec) {
+      dec = dec === undefined ? 2 : dec;
+      return (v * 100).toLocaleString('fr-FR', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + '\u00a0%';
+    }
+    function compact(v) {
+      if (Math.abs(v) >= 1e6) return (v / 1e6).toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + '\u00a0M\u20ac';
+      if (Math.abs(v) >= 1e3) return (v / 1e3).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + '\u00a0k\u20ac';
+      return v.toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + '\u00a0\u20ac';
+    }
+    function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+
+    // ============================================================
+    // FORMULE VF — CAPITALISATION MENSUELLE (norme AMF / MiFID II)
+    // r_m = (1 + r_a)^(1/12) − 1  [taux équivalent, pas proportionnel]
+    // VF  = C × (1+r_m)^n + PMT × [(1+r_m)^n − 1] / r_m
+    // ============================================================
+    function calcVF(C, PMT, rAnnuel, dureeAns) {
+      var n  = dureeAns * 12;
+      var rm = Math.pow(1 + rAnnuel, 1 / 12) - 1;
+      var vfCap, vfVer;
+      if (Math.abs(rm) < 1e-10) {
+        vfCap = C;
+        vfVer = PMT * n;
+      } else {
+        var f  = Math.pow(1 + rm, n);
+        vfCap  = C * f;
+        vfVer  = PMT * (f - 1) / rm;
+      }
+      return { vfCap: vfCap, vfVer: vfVer, vfTot: vfCap + vfVer };
+    }
+
+    // CAGR du capital total investi : (VF / Investi)^(1/n) − 1
+    function cagr(vfTot, investi, n) {
+      if (investi <= 0 || vfTot <= 0 || n <= 0) return 0;
+      return Math.pow(vfTot / investi, 1 / n) - 1;
+    }
+
+    // ============================================================
+    // LECTURE PARAMÈTRES
+    // ============================================================
+    function getP() {
+      return {
+        C:   parseFloat(document.getElementById('i-cap').value),
+        PMT: parseFloat(document.getElementById('i-ver').value),
+        n:   parseInt(document.getElementById('i-dur').value, 10)
+      };
+    }
+
+    // ============================================================
+    // MISE À JOUR AFFICHAGE SLIDERS
+    // ============================================================
+    function updateSliders(p) {
+      document.getElementById('d-cap').textContent = p.C.toLocaleString('fr-FR') + '\u00a0\u20ac';
+      document.getElementById('d-ver').textContent = p.PMT.toLocaleString('fr-FR') + '\u00a0\u20ac/mois';
+      document.getElementById('d-dur').textContent = p.n + '\u00a0ans';
+      var t = getTaux();
+      var tIds = ['d-ts', 'd-te', 'd-td'];
+      for (var i = 0; i < 3; i++) {
+        var pctStr = (t[i] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        document.getElementById(tIds[i]).textContent = pctStr + '\u00a0%\u00a0/\u00a0an';
+      }
+    }
+
+    // ============================================================
+    // KPI CARDS
+    // ============================================================
+    function updateKPI(p) {
+      var inv  = p.C + p.PMT * 12 * p.n;
+      var t    = getTaux();
+      // Pré-calcul des VF pour la barre comparative
+      var vfAll = [
+        calcVF(p.C, p.PMT, t[0], p.n).vfTot,
+        calcVF(p.C, p.PMT, t[1], p.n).vfTot,
+        calcVF(p.C, p.PMT, t[2], p.n).vfTot
+      ];
+      var vfMax = Math.max.apply(null, vfAll);
+      for (var i = 0; i < 3; i++) {
+        var res  = { vfTot: vfAll[i] };
+        var gain = vfAll[i] - inv;
+        var mx   = inv > 0 ? vfAll[i] / inv : 0;
+        var cg   = cagr(vfAll[i], inv, p.n);
+        var s    = IDS[i];
+        var pctTaux = (t[i] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        var barPct  = vfMax > 0 ? Math.round(vfAll[i] / vfMax * 100) : 0;
+        var barEl   = document.getElementById('kpi-bar-' + s);
+        if (barEl) barEl.style.width = barPct + '%';
+        set('kpi-rate-' + s, 'Rendement actif\u00a0' + pctTaux + '\u00a0%\u00a0/\u00a0an');
+        set('kpi-vf-'   + s, eur(vfAll[i]));
+        set('kpi-gain-' + s, eur(gain));
+        set('kpi-mult-' + s, mx.toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
+        set('kpi-cagr-' + s, pct(cg));
+      }
+    }
+
+    // ============================================================
+    // PROJECTIONS DÉTAILLÉES
+    // ============================================================
+    function updateProjections(p) {
+      var inv = p.C + p.PMT * 12 * p.n;
+      var t   = getTaux();
+      for (var i = 0; i < 3; i++) {
+        var res  = calcVF(p.C, p.PMT, t[i], p.n);
+        var gain = res.vfTot - inv;
+        var mx   = res.vfTot / inv;
+        var cg   = cagr(res.vfTot, inv, p.n);
+        var rm   = (Math.pow(1 + t[i], 1 / 12) - 1) * 100;
+        var s    = IDS[i];
+        set('p-cap-' + s, eur(p.C));
+        set('p-vm-'  + s, p.PMT.toLocaleString('fr-FR') + '\u00a0\u20ac/mois');
+        set('p-r-'   + s, (t[i] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00a0%');
+        set('p-rm-'  + s, rm.toLocaleString('fr-FR', { minimumFractionDigits: 4, maximumFractionDigits: 4 }) + '\u00a0%');
+        set('p-dur-' + s, p.n + '\u00a0ans');
+        set('p-nm-'  + s, (p.n * 12).toString());
+        set('p-inv-' + s, eur(inv));
+        set('p-vc-'  + s, eur(res.vfCap));
+        set('p-vv-'  + s, eur(res.vfVer));
+        set('p-vt-'  + s, eur(res.vfTot));
+        set('p-gn-'  + s, eur(gain));
+        set('p-mx-'  + s, mx.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00d7');
+        set('p-cg-'  + s, pct(cg));
+      }
+    }
+
+    // ============================================================
+    // DISTRIBUTION DES GAINS
+    // ============================================================
+    function updateDistribution(p) {
+      var versNets = p.PMT * 12 * p.n;
+      var t = getTaux();
+      for (var i = 0; i < 3; i++) {
+        var res = calcVF(p.C, p.PMT, t[i], p.n);
+        var int = res.vfTot - p.C - versNets;
+        var pctInt = int / res.vfTot;
+        var pctInv = (p.C + versNets) / res.vfTot;
+        var s = IDS[i];
+        set('dg-cap-' + s, eur(p.C));
+        set('dg-ver-' + s, eur(versNets));
+        set('dg-int-' + s, eur(int));
+        set('dg-pct-' + s, pct(pctInt));
+        set('dg-pci-' + s, pct(pctInv));
+      }
+    }
+
+    // ============================================================
+    // IMPACT TER
+    // ============================================================
+    function updateTER(p) {
+      var t = getTaux();
+      for (var i = 0; i < 3; i++) {
+        var rBrut = t[i];
+        var rNet  = rBrut - TER[i];
+        var resBr = calcVF(p.C, p.PMT, rBrut, p.n);
+        var resNt = calcVF(p.C, p.PMT, rNet,  p.n);
+        var cout  = resBr.vfTot - resNt.vfTot;
+        var s = IDS[i];
+        set('ter-br-' + s, eur(resBr.vfTot));
+        set('ter-nt-' + s, eur(resNt.vfTot));
+        set('ter-ct-' + s, '−' + eur(cout));
+      }
+    }
+
+    // ============================================================
+    // PROGRESSION ANNUELLE
+    // ============================================================
+    function updateProgression(p) {
+      var tbody = document.getElementById('prog-body');
+      tbody.innerHTML = '';
+      var t = getTaux();
+      // Construire la liste des années à afficher selon progStep
+      var years = [];
+      if (progStep === 1) {
+        for (var k = 1; k <= p.n; k++) years.push(k);
+      } else {
+        for (var k = progStep; k <= p.n; k += progStep) years.push(k);
+        if (years.length === 0 || years[years.length - 1] !== p.n) years.push(p.n);
+      }
+      for (var yi = 0; yi < years.length; yi++) {
+        var k = years[yi];
+        var inv = p.C + p.PMT * 12 * k;
+        var rs  = calcVF(p.C, p.PMT, t[0], k);
+        var re  = calcVF(p.C, p.PMT, t[1], k);
+        var rd  = calcVF(p.C, p.PMT, t[2], k);
+        var isDouble = rs.vfTot >= 2 * inv || re.vfTot >= 2 * inv;
+        var tr = document.createElement('tr');
+        if (isDouble) tr.className = 'row-double';
+        tr.innerHTML =
+          '<td>' + k + '</td>' +
+          '<td>' + eur(inv) + '</td>' +
+          '<td>' + eur(rs.vfTot) + '</td>' +
+          '<td>' + eur(rs.vfTot - inv) + '</td>' +
+          '<td>' + eur(re.vfTot) + '</td>' +
+          '<td>' + eur(re.vfTot - inv) + '</td>' +
+          '<td>' + eur(rd.vfTot) + '</td>' +
+          '<td>' + eur(rd.vfTot - inv) + '</td>';
+        tbody.appendChild(tr);
+      }
+    }
+
+    function setProgStep(step) {
+      progStep = step;
+      var b1 = document.getElementById('btn-prog-1');
+      var b5 = document.getElementById('btn-prog-5');
+      if (b1) b1.className = 'prog-btn' + (step === 1 ? ' active' : '');
+      if (b5) b5.className = 'prog-btn' + (step === 5 ? ' active' : '');
+      refresh();
+    }
+
+    // ============================================================
+    // MATRICE SENSIBILITÉ rendement × durée
+    // ============================================================
+    function updateMatrix(p) {
+      var head = document.getElementById('mat-head');
+      var body = document.getElementById('mat-body');
+      var profRates = getTaux();
+
+      // En-tête
+      var hRow = '<tr><th>r \\ Durée</th>';
+      for (var j = 0; j < MAT_D.length; j++) {
+        var isCur = (MAT_D[j] === p.n);
+        hRow += '<th style="' + (isCur ? 'color:var(--blue);border-bottom:2px solid var(--blue)' : '') + '">' + MAT_D[j] + ' ans</th>';
+      }
+      hRow += '</tr>';
+      head.innerHTML = hRow;
+
+      // Corps
+      var rows = '';
+      for (var i = 0; i < MAT_R.length; i++) {
+        var r = MAT_R[i];
+        var isS = Math.abs(r - profRates[0]) < 0.0001;
+        var isE = Math.abs(r - profRates[1]) < 0.0001;
+        var isD = Math.abs(r - profRates[2]) < 0.0001;
+        var rowClass = isS ? 'mat-row-sec' : (isE ? 'mat-row-eq' : (isD ? 'mat-row-dyn' : ''));
+        var rLabel = (r * 100).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + '\u00a0%';
+        if (isS) rLabel += ' (Sécu.)';
+        if (isE) rLabel += ' (Équil.)';
+        if (isD) rLabel += ' (Dyn.)';
+        rows += '<tr class="' + rowClass + '">';
+        rows += '<td style="font-weight:600">' + rLabel + '</td>';
+        for (var jj = 0; jj < MAT_D.length; jj++) {
+          var dur   = MAT_D[jj];
+          var res   = calcVF(p.C, p.PMT, r, dur);
+          var isCurD = (dur === p.n);
+          var isProf = (isS || isE || isD) && isCurD;
+          var cellClass = isProf ? (isS ? 'mat-cell-sec' : (isE ? 'mat-cell-eq' : 'mat-cell-dyn')) :
+                          (isCurD ? 'mat-col-cur' : '');
+          rows += '<td class="' + cellClass + '">' + compact(res.vfTot) + '</td>';
+        }
+        rows += '</tr>';
+      }
+      body.innerHTML = rows;
+
+      // Légende dynamique
+      var legNames = ['S\u00e9cu.\u00a0', '\u00c9quil.\u00a0', 'Dyn.\u00a0'];
+      var legIds   = ['mx-leg-s', 'mx-leg-e', 'mx-leg-d'];
+      for (var li = 0; li < 3; li++) {
+        var legPct = (profRates[li] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        set(legIds[li], legNames[li] + legPct + '\u00a0%');
+      }
+    }
+
+    // ============================================================
+    // AJUSTEMENT INFLATION  — VF_réelle = VF / (1+inflation)^n
+    // ============================================================
+    function updateInflation(p) {
+      var deflat = Math.pow(1 + INF, p.n);
+      var t = getTaux();
+      for (var i = 0; i < 3; i++) {
+        var res  = calcVF(p.C, p.PMT, t[i], p.n);
+        var reel = res.vfTot / deflat;
+        var per  = res.vfTot - reel;
+        var s = IDS[i];
+        set('inf-nom-' + s, eur(res.vfTot));
+        set('inf-ree-' + s, eur(reel));
+        set('inf-per-' + s, '−' + eur(per));
+      }
+    }
+
+    // ============================================================
+    // COMPARAISON LIVRET A (2,4 % depuis 01/02/2025)
+    // ============================================================
+    function updateLivretA(p) {
+      var resLA = calcVF(p.C, p.PMT, LA, p.n);
+      var t = getTaux();
+      set('la-vf', eur(resLA.vfTot));
+      for (var i = 0; i < 3; i++) {
+        var res   = calcVF(p.C, p.PMT, t[i], p.n);
+        var gainLA = res.vfTot - resLA.vfTot;
+        var ratio  = res.vfTot / resLA.vfTot;
+        var s = IDS[i];
+        set('la-' + s, eur(res.vfTot));
+        set('la-g' + s, '+' + eur(gainLA));
+        set('la-r' + s, ratio.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00d7');
+      }
+    }
+
+    // ============================================================
+    // STRESS TESTS  — ±30 pp sur le taux nominal
+    // ============================================================
+    function updateStress(p) {
+      var t = getTaux();
+      for (var i = 0; i < 3; i++) {
+        var r  = t[i];
+        set('st-d-' + IDS[i], eur(calcVF(p.C, p.PMT, r - 0.30, p.n).vfTot));
+        set('st-n-' + IDS[i], eur(calcVF(p.C, p.PMT, r,        p.n).vfTot));
+        set('st-f-' + IDS[i], eur(calcVF(p.C, p.PMT, r + 0.30, p.n).vfTot));
+      }
+      updateManuel();
+    }
+
+    function updateManuel() {
+      var p = getP();
+      for (var i = 0; i < 3; i++) {
+        var man = parseFloat(document.getElementById('st-m-' + IDS[i]).value) || 0;
+        set('st-r-' + IDS[i], eur(calcVF(p.C, p.PMT, TAUX[i] + man / 100, p.n).vfTot));
+      }
+    }
+
+    // ============================================================
+    // RAFRAÎCHISSEMENT GLOBAL
+    // ============================================================
+    function refresh() {
+      var p = getP();
+      updateSliders(p);
+      updateKPI(p);
+      updateProjections(p);
+      updateDistribution(p);
+      updateTER(p);
+      updateProgression(p);
+      updateMatrix(p);
+      updateInflation(p);
+      updateLivretA(p);
+      updateStress(p);
+    }
+
+    // ============================================================
+    // RÉINITIALISATION
+    // ============================================================
+    function resetAll() {
+      document.getElementById('i-cap').value = 5000;
+      document.getElementById('i-ver').value = 200;
+      document.getElementById('i-dur').value = 25;
+      document.getElementById('i-ts').value  = TAUX_DEF[0];
+      document.getElementById('i-te').value  = TAUX_DEF[1];
+      document.getElementById('i-td').value  = TAUX_DEF[2];
+      for (var i = 0; i < 3; i++) document.getElementById('st-m-' + IDS[i]).value = 0;
+      progStep = 1;
+      var b1 = document.getElementById('btn-prog-1');
+      var b5 = document.getElementById('btn-prog-5');
+      if (b1) b1.className = 'prog-btn active';
+      if (b5) b5.className = 'prog-btn';
+      refresh();
+    }
+
+    // ============================================================
+    // INIT AU CHARGEMENT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', refresh);
+  </script>
+</body>
+</html>

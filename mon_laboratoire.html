@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mon Laboratoire, Infrastructure virtuelle</title>
+  <meta name="description" content="Mon Laboratoire v1.1.0 : laboratoire d'infrastructure virtuelle. Hyper-V, Proxmox, 11 labs, collection ISO, scripts d'automatisation. Gabriel ROULON.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Mon Laboratoire v1.1.0, Infrastructure virtuelle",
+    "description": "Laboratoire d'infrastructure virtuelle : Hyper-V, Proxmox, 11 labs, collection ISO organisée, automatisation PowerShell.",
+    "author": { "@type": "Person", "name": "Gabriel ROULON" },
+    "inLanguage": "fr-FR",
+    "dateModified": "2026-02-19"
+  }
+  </script>
+  <style>
+    .page-header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+    .page-header h1 { font-size: 2em; margin-bottom: 6px; }
+    .page-header .subtitle { color: var(--text-secondary); font-size: 0.97em; }
+    .accordion-inner p { color: var(--text-secondary); }
+    .accordion-inner h3 { font-size: 1em; color: var(--text-secondary); font-weight: 500; margin: 16px 0 6px; }
+    .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .page-tag { display: inline-block; font-size: 0.76em; font-weight: 500; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border); border-radius: 3px; padding: 2px 10px; }
+    .page-badge-dev { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 3px; padding: 2px 10px; color: var(--text-secondary); border: 1px solid var(--border); }
+    .page-badge-dev::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 0.78em;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .metric-val {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--text);
+      display: block;
+    }
+    .metric-label {
+      font-size: 0.78em;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Labs grid */
+    .labs-section { margin: 16px 0; }
+    .labs-section h3 {
+      font-size: 0.78em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .labs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    /* 7 items : étendre le dernier pour remplir la ligne (cols 3-4) */
+    .labs-grid > :last-child:nth-child(4n+3) { grid-column: span 2; }
+    @media (max-width: 640px) { .labs-grid { grid-template-columns: repeat(2, 1fr); } }
+    .labs-grid { margin-bottom: 18px; }
+    .lab-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      transition: border-color 0.15s;
+    }
+    .lab-card:hover { border-color: var(--text-secondary); }
+    .lab-id {
+      font-size: 0.74em;
+      font-weight: 700;
+      font-family: monospace;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+    }
+    .lab-name {
+      font-size: 0.9em;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .lab-desc {
+      font-size: 0.8em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ISO grid */
+    .iso-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .iso-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      transition: border-color 0.15s;
+    }
+    .iso-card:hover { border-color: var(--text-secondary); }
+    .iso-cat {
+      font-size: 0.84em;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .iso-items {
+      font-size: 0.78em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Structure folder list */
+    .folder-list {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .folder-item {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 9px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.87em;
+      transition: border-color 0.15s;
+    }
+    .folder-item:hover { border-color: var(--text-secondary); }
+    .folder-name {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--text);
+      min-width: 220px;
+      flex-shrink: 0;
+    }
+    .folder-desc { color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Chatbot panel -->
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Retour à l'accueil">
+        <span class="header-main">Présentation</span>
+        <span class="header-sub">Infrastructure virtuelle v1.1.0, Hyper-V, Proxmox, 11 labs</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <button class="btn-chatbot"
+        data-summary="Mon Laboratoire v1.1.0 : infrastructure virtuelle personnelle, 2 hyperviseurs, 11 labs, en cours de conception.&#10;Hyper-V (4) : HV-WIN-SYS (Systèmes), HV-WIN-AUTO (Automatisation), HV-WIN-NET (Réseau), HV-WIN-SEC (Sécurité).&#10;Proxmox (7) : PMX-LNX (Linux), PMX-CYB (Cyber), PMX-SERV (Services), PMX-SUP (Support), PMX-DEV (Dev), PMX-AI (IA), PMX-VM (VM).&#10;Collection ISO en 10 catégories : Windows, Linux, Firewalls, Hyperviseurs, Microsoft AI, Data, DevOps, SCCM, Divers.&#10;Scripts PowerShell portables et idempotents : menus CLI, déploiement, backups, archivage (04_Scripts/).&#10;HashiCorp Vault intégré pour la gestion des secrets et credentials des environnements virtualisés.&#10;Conventions de nommage numérotées stables (00_ à 04_). Chaque lab documenté : réseau, adressage, topologie VM.&#10;Socle partagé avec Dashboard_IT et Maintenance Agent. Reproductibilité garantie par scripts idempotents."
+        aria-label="Ouvrir le résumé IA de la page">
+        Résumé IA
+      </button>
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
+          Navigation <span class="nav-arrow">&#9660;</span>
+        </button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <div class="page-header">
+      <h1 class="sr-only">Mon Laboratoire, IT Dashboard</h1>
+      <div class="page-meta">
+        <span class="page-tag">Hyper-V</span>
+        <span class="page-tag">Proxmox</span>
+        <span class="page-tag">Infrastructure virtuelle</span>
+        <span class="page-badge-dev">En cours de conception</span>
+      </div>
+    </div>
+
+    <!-- Vue d'ensemble -->
+    <div class="accordion importance-high" id="acc-overview">
+      <button class="accordion-header" aria-controls="acc-overview-content">
+        Vue d'ensemble
+      </button>
+      <div class="accordion-content" id="acc-overview-content">
+        <div class="accordion-inner">
+          <div class="status-badge" aria-label="Statut du projet">
+            <span class="status-dot"></span>
+            En cours de conception
+          </div>
+          <p>Mon_Laboratoire est un environnement complet pour la mise en place et le test d'infrastructures virtualisées. Il permet de déployer des machines virtuelles sous Hyper-V et Proxmox, de configurer des réseaux isolés et d'automatiser les tâches d'administration via des scripts portables.</p>
+          <p>L'objectif principal : garantir la reproductibilité. Chaque lab est documenté (réseau, adressage, topologie VM, architecture), chaque configuration est exportée, chaque script est portable et idempotent.</p>
+          <div class="metric-row">
+            <div class="metric-card">
+              <span class="metric-val">1.1.0</span>
+              <span class="metric-label">version</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">2</span>
+              <span class="metric-label">hyperviseurs</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">11</span>
+              <span class="metric-label">labs définis</span>
+            </div>
+            <div class="metric-card">
+              <span class="metric-val">10</span>
+              <span class="metric-label">catégories ISO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Les 11 labs -->
+    <div class="accordion importance-critical" id="acc-labs">
+      <button class="accordion-header" aria-controls="acc-labs-content">
+        Les 11 labs
+      </button>
+      <div class="accordion-content" id="acc-labs-content">
+        <div class="accordion-inner">
+          <p>Chaque lab est une unité autonome avec sa propre documentation de schémas (réseau, adressage IP, topologie VM, architecture). Les labs Hyper-V ciblent l'environnement Windows, les labs Proxmox couvrent des cas d'usage plus variés.</p>
+
+          <div class="labs-section">
+            <h3>Hyper-V (4 labs)</h3>
+            <div class="labs-grid">
+              <div class="lab-card">
+                <div class="lab-id">Lab01 / HV-WIN-SYS</div>
+                <div class="lab-name">Systèmes Windows</div>
+                <div class="lab-desc">Administration système Windows en environnement virtualisé Hyper-V.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab02 / HV-WIN-AUTO</div>
+                <div class="lab-name">Automatisation</div>
+                <div class="lab-desc">Scripts et automatisation des tâches d'administration Windows.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab03 / HV-WIN-NET</div>
+                <div class="lab-name">Réseau</div>
+                <div class="lab-desc">Configuration réseau, VLANs, routage en environnement Windows.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab04 / HV-WIN-SEC</div>
+                <div class="lab-name">Sécurité</div>
+                <div class="lab-desc">Sécurisation de l'environnement Windows, audit, hardening.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="labs-section">
+            <h3>Proxmox (7 labs)</h3>
+            <div class="labs-grid">
+              <div class="lab-card">
+                <div class="lab-id">Lab01 / PMX-LNX</div>
+                <div class="lab-name">Linux</div>
+                <div class="lab-desc">Administration Linux sur Proxmox (Debian, Ubuntu, Kali).</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab02 / PMX-CYB</div>
+                <div class="lab-name">Cybersécurité</div>
+                <div class="lab-desc">Tests de sécurité, analyse de vulnérabilités, outils offensifs/défensifs.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab03 / PMX-SERV</div>
+                <div class="lab-name">Services</div>
+                <div class="lab-desc">Déploiement et configuration de services réseau (DNS, DHCP, web).</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab04 / PMX-SUP</div>
+                <div class="lab-name">Support</div>
+                <div class="lab-desc">Environnement de support et de diagnostic des incidents.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab05 / PMX-DEV</div>
+                <div class="lab-name">Développement</div>
+                <div class="lab-desc">Environnement de développement et de test d'applications.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab06 / PMX-AI</div>
+                <div class="lab-name">Intelligence Artificielle</div>
+                <div class="lab-desc">Déploiement d'outils IA et de Machine Learning sous Proxmox.</div>
+              </div>
+              <div class="lab-card">
+                <div class="lab-id">Lab07 / PMX-VM</div>
+                <div class="lab-name">Gestion des VM</div>
+                <div class="lab-desc">Templates, clonage, snapshots et cycle de vie des machines virtuelles.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Collection ISO -->
+    <div class="accordion importance-high" id="acc-iso">
+      <button class="accordion-header" aria-controls="acc-iso-content">
+        Collection ISO officielle
+      </button>
+      <div class="accordion-content" id="acc-iso-content">
+        <div class="accordion-inner">
+          <p>Les images ISO sont classées par catégorie dans <code>01_ISO_Officielles/</code>. Chaque sous-dossier documente les ISOs disponibles et leur utilisation dans les labs. Les chemins sont référencés en relatif dans les scripts pour assurer la portabilité.</p>
+          <div class="iso-grid">
+            <div class="iso-card">
+              <div class="iso-cat">Windows</div>
+              <div class="iso-items">Windows 10/11 Education, Windows Server</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Linux</div>
+              <div class="iso-items">Debian, Ubuntu Desktop, Ubuntu Server, Kali Linux</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Firewalls</div>
+              <div class="iso-items">OPNsense, pfSense</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Hyperviseurs</div>
+              <div class="iso-items">Hyper-V Server, Proxmox VE</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Microsoft AI</div>
+              <div class="iso-items">Machine Learning Server (Linux/Windows), R Client, R Server</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Microsoft Data</div>
+              <div class="iso-items">SQL Server Developer/Standard, Access, Datazen Server</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Microsoft DevOps</div>
+              <div class="iso-items">Azure DevOps Server/Express, Visual Studio Enterprise, Remote Tools</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Microsoft Productivity</div>
+              <div class="iso-items">Project, Visio, SharePoint Server</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Microsoft System Center</div>
+              <div class="iso-items">SCCM, SCOM, VMM, SCSM, SCO, DPM</div>
+            </div>
+            <div class="iso-card">
+              <div class="iso-cat">Divers</div>
+              <div class="iso-items">Packs de langues Windows, fonctionnalités optionnelles</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structure du projet -->
+    <div class="accordion importance-high" id="acc-structure">
+      <button class="accordion-header" aria-controls="acc-structure-content">
+        Structure du projet
+      </button>
+      <div class="accordion-content" id="acc-structure-content">
+        <div class="accordion-inner">
+          <p>La structure suit une convention de nommage numérotée stable. Chaque dossier a un rôle précis, documenté dans son propre README.</p>
+          <ul class="folder-list">
+            <li class="folder-item">
+              <span class="folder-name">00_Documentation_Generale/</span>
+              <span class="folder-desc">Standards, procédures, helpers de portabilité, templates README</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">01_ISO_Officielles/</span>
+              <span class="folder-desc">Images ISO classées en 10 catégories, chemins relatifs référencés</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">02_Hyperviseurs/</span>
+              <span class="folder-desc">Configurations des 11 labs Hyper-V et Proxmox avec diagrammes</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">03_Templates_VM/</span>
+              <span class="folder-desc">Modèles de machines virtuelles réutilisables</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">04_Scripts/</span>
+              <span class="folder-desc">Menus CLI, déploiement, logs, archivage, backups (PowerShell portables)</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">05_Exports_Configs/</span>
+              <span class="folder-desc">Exports de configurations (switches, firewalls)</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">97_Logs/</span>
+              <span class="folder-desc">Logs des scripts (convention NomScript_YYYYMMDD_HHmmss.log)</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">98_Archives/</span>
+              <span class="folder-desc">Archives quotidiennes des logs (Logs_YYYYMMDD.zip)</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">99_Backups/</span>
+              <span class="folder-desc">Sauvegardes : quotidienne, complète 7 j, externe 4 j</span>
+            </li>
+            <li class="folder-item">
+              <span class="folder-name">Vault/</span>
+              <span class="folder-desc">Composant secondaire : HashiCorp Vault pour la configuration sensible</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ce que cela démontre -->
+    <div class="accordion importance-high" id="acc-apport">
+      <button class="accordion-header" aria-controls="acc-apport-content">
+        Ce que cela démontre
+      </button>
+      <div class="accordion-content" id="acc-apport-content">
+        <div class="accordion-inner">
+          <p>Concevoir un laboratoire d'infrastructure, ce n'est pas installer des VM. C'est définir une structure reproductible, nommer les ressources de façon cohérente, documenter chaque configuration, et automatiser ce qui peut l'être.</p>
+          <div class="highlight">
+            <p>Ce laboratoire est la preuve que je pense infrastructure au sens complet : organisation des ressources, portabilité des scripts, traçabilité des opérations, séparation des responsabilités entre les couches.</p>
+          </div>
+          <p>La même rigueur de structuration appliquée ici (conventions de nommage, standards locaux, archivage automatique, documentation systématique) est celle que j'applique sur tous mes projets, y compris Dashboard_IT et Maintenance Agent.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Démarche de démonstration technique et académique 2026</p>
+  </footer>
+
+  <script src="common.js" defer></script>
+</body>
+</html>

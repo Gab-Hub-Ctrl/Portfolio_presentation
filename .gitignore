@@ -1,0 +1,54 @@
+# ==============================
+# Système / OS
+# ==============================
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ==============================
+# Fichiers temporaires
+# ==============================
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+*_temp_*
+*_temp.*
+
+# ==============================
+# Sauvegardes
+# ==============================
+*.backup
+*.old
+
+# ==============================
+# Éditeurs / IDE
+# ==============================
+.vscode/
+.idea/
+*.sublime-*
+
+# ==============================
+# Claude Code (fichiers internes)
+# ==============================
+.claude/
+
+# ==============================
+# Logs
+# ==============================
+*.log
+
+# ==============================
+# CV PDF (non publié dans le dépôt)
+# Les PDF liés en téléchargement (PEA_V2_PRO.pdf, Procédure_VLAN.pdf) sont inclus.
+# ==============================
+Cv_ROULON_Gabriel.pdf
+
+# ==============================
+# Fichiers de développement
+# ==============================
+.gitignore.backup
+prepare-git.ps1
+plan_*
+structure_*

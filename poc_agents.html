@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>POC Agents IT Dashboard</title>
+  <meta name="description" content="Trois agents opérationnels v2.1.0 : Cerveau (manager), Chatbot (FAQ frontend), Collecteurs (10 pôles). Approche neurosymbolique. Gabriel ROULON.">
+  <meta name="author" content="Gabriel ROULON">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="common.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "POC Agents IT Dashboard",
+    "description": "Trois agents opérationnels v2.1.0 : Cerveau (manager), Chatbot (FAQ frontend), Collecteurs (10 pôles). Approche neurosymbolique.",
+    "author": { "@type": "Person", "name": "Gabriel ROULON" },
+    "inLanguage": "fr-FR",
+    "dateModified": "2026-02-19"
+  }
+  </script>
+  <style>
+    /* === LAYOUT === */
+    main {
+      padding-top: calc(var(--header-h) + 28px);
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding-left: 20px;
+      padding-right: 20px;
+      padding-bottom: 48px;
+    }
+
+    .page-header {
+      padding: 36px 0 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .page-header h1 { font-size: 1.9em; margin-bottom: 6px; }
+    .page-header .subtitle { color: var(--text-secondary); font-size: 0.95em; }
+
+    /* === TYPOGRAPHIE INTERNE === */
+    .accordion-inner h2 {
+      font-size: 1.05em;
+      font-weight: 600;
+      margin: 20px 0 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    .accordion-inner h2:first-child { margin-top: 0; }
+    .accordion-inner p { font-size: 0.9em; color: var(--text-secondary); line-height: 1.7; margin: 8px 0; }
+    .accordion-inner strong { color: var(--text); }
+    .accordion-inner code {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.88em;
+      font-family: 'Courier New', Courier, monospace;
+      color: var(--text);
+    }
+
+    /* === DIAGRAMME AGENTS === */
+    .agents-diagram {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 18px 0;
+      padding: 16px 8px;
+      flex-wrap: wrap;
+    }
+    .agent-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+      text-align: center;
+      min-width: 130px;
+      max-width: 170px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .agent-block:hover { transform: translateY(-2px); }
+    .agent-block.agent-collecteurs { border-color: #e6c32a; }
+    .agent-block.agent-cerveau     { border-color: var(--red); }
+    .agent-block.agent-chatbot     { border-color: var(--blue); }
+    .agent-name {
+      font-weight: 700;
+      font-size: 0.92em;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .agent-role { font-size: 0.76em; color: var(--text-secondary); line-height: 1.3; }
+    .diagram-arrow {
+      font-size: 1.4em;
+      color: var(--text-secondary);
+      padding: 0 8px;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .diagram-label {
+      font-size: 0.7em;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 4px;
+    }
+    .diagram-group { display: flex; flex-direction: column; align-items: center; }
+
+    /* === COMPOSANTS CARDS === */
+    .component-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .cc-2col { grid-template-columns: repeat(2, 1fr); }
+    .cc-2col > *:last-child:nth-child(odd) { grid-column: 1 / -1; }
+    .component-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--bg-card);
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .component-card:hover { border-color: var(--text-secondary); transform: translateY(-1px); }
+    .component-card h4 {
+      margin: 0 0 6px;
+      font-size: 0.9em;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .component-card p {
+      margin: 0;
+      font-size: 0.84em;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* === FICHE AGENT === */
+    .agent-fiche {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 14px 0;
+      background: var(--bg-card);
+    }
+    .agent-fiche-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .fiche-version {
+      font-size: 0.78em;
+      color: var(--text-secondary);
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .fiche-status {
+      font-size: 0.76em;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .fiche-status.en-revue {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    /* === COMMON BAR === */
+    .common-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .common-tag {
+      font-size: 0.74em;
+      padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      white-space: nowrap;
+    }
+
+    /* === POLES GRID === */
+    .poles-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .pole-cell {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 0.78em;
+      background: var(--bg-card);
+      transition: border-color 0.2s ease;
+    }
+    .pole-cell:hover { border-color: var(--text-secondary); }
+    .pole-num {
+      font-weight: 700;
+      font-family: 'Courier New', Courier, monospace;
+      display: block;
+      margin-bottom: 2px;
+      color: var(--text);
+    }
+    .pole-name { color: var(--text-secondary); font-size: 0.9em; line-height: 1.2; }
+
+    /* === METRICS ROW === */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 768px) {
+      .agents-diagram { flex-direction: column; }
+      .diagram-arrow { transform: rotate(90deg); }
+      .poles-grid { grid-template-columns: repeat(2, 1fr); }
+      .component-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Aller au contenu principal</a>
+
+  <!-- Chatbot panel -->
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <header role="banner">
+    <div class="header-left">
+      <a href="index.html" aria-label="Retour à l'accueil">
+        <span class="header-main">Présentation</span>
+        <span class="header-sub">Agents opérationnels v2.1.0, Cerveau, Chatbot, Collecteurs</span>
+      </a>
+    </div>
+    <div class="header-right">
+      <button class="btn-chatbot"
+        data-summary="POC Agents v2.1.0 : 3 agents opérationnels sur 10 pôles IT, architecture en revue.&#10;Agent Cerveau : manager central, supervise, nettoie, répare et relance les 10 collecteurs, 100 % déterministe.&#10;Agent Chatbot : FAQ versionnée JSON/Markdown, matching par règles, 100 % frontend, cible 95 % de réponses correctes.&#10;Agent Collecteurs : 10 scripts Python indépendants, un par pôle (Sécurité, Incidents, Performances, Réseaux, Systèmes...).&#10;Architecture : FastAPI backend, HashiCorp Vault pour les secrets, intégration complète Dashboard_IT.&#10;Approche neurosymbolique : toutes les décisions sont déterministes, aucune déléguée à un LLM génératif.&#10;Gouvernance : standards Dashboard_IT, métriques DoD, traçabilité complète de chaque action d'agent.&#10;Statut : 3 agents en revue, architecture finalisée, livrables en cours de validation."
+        aria-label="Ouvrir le résumé IA de la page">
+        Résumé IA
+      </button>
+      <nav class="nav-dropdown" aria-label="Navigation principale">
+        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">Navigation <span class="nav-arrow">&#9660;</span></button>
+        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
+          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
+          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
+          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
+          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
+          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
+          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
+          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
+          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
+          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
+          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
+          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
+          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
+          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
+          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
+          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" role="main">
+    <h1 class="sr-only">POC Agents, IT Dashboard</h1>
+
+    <!-- ===== SECTION 1 : Vue d'ensemble ===== -->
+    <div class="accordion importance-critical">
+      <button class="accordion-header">
+        Vue d'ensemble : trois agents, un objectif
+      </button>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+          <p>Trois Proof of Concept d'agents opérationnels (v2.1.0) conçus pour démontrer qu'un système multi-agents peut remplacer des scripts manuels, avec le même niveau d'exigence en termes de qualité, sécurité et traçabilité.</p>
+
+          <h2>Architecture multi-agents</h2>
+          <div class="agents-diagram" role="img" aria-label="Diagramme : les 10 collecteurs alimentent le Cerveau qui supervise l'ensemble, le Chatbot expose les informations à l'utilisateur">
+            <div class="diagram-group">
+              <div class="agent-block agent-collecteurs">
+                <div class="agent-name">Collecteurs</div>
+                <div class="agent-role">10 agents par pôle</div>
+                <div class="agent-role">Collecte d'alertes JSON</div>
+              </div>
+              <div class="diagram-label">Entrée des données</div>
+            </div>
+            <span class="diagram-arrow" aria-hidden="true">&#8594;</span>
+            <div class="diagram-group">
+              <div class="agent-block agent-cerveau">
+                <div class="agent-name">Cerveau</div>
+                <div class="agent-role">Manager central</div>
+                <div class="agent-role">Supervise, répare, relance</div>
+              </div>
+              <div class="diagram-label">Orchestration</div>
+            </div>
+            <span class="diagram-arrow" aria-hidden="true">&#8594;</span>
+            <div class="diagram-group">
+              <div class="agent-block agent-chatbot">
+                <div class="agent-name">Chatbot</div>
+                <div class="agent-role">Interface FAQ</div>
+                <div class="agent-role">Réponses prêtes</div>
+              </div>
+              <div class="diagram-label">Interface utilisateur</div>
+            </div>
+          </div>
+
+          <p>L'approche retenue est <strong>neurosymbolique</strong> : la couche symbolique (règles, états, logique formelle, audit) gouverne et encadre les capacités du ML. Le ML assiste (compréhension du langage, matching, génération), mais c'est la symbolique qui décide, trace et valide.</p>
+
+          <h2>Niveau d'exigence commun</h2>
+          <div class="highlight">
+            <p>Les trois POC partagent le même niveau d'exigence : intégration Dashboard_IT, sécurité Vault (AppRoles), standards Dashboard_IT, métriques et critères de succès (DoD), gouvernance et traçabilité.</p>
+          </div>
+
+          <div class="metrics-row">
+            <div class="metric-card">
+              <span class="metric-value">3</span>
+              <div class="metric-label">Agents POC</div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-value">10</span>
+              <div class="metric-label">Collecteurs par pôle</div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-value">v2.1.0</span>
+              <div class="metric-label">Version institutionnelle</div>
+            </div>
+            <div class="metric-card">
+              <span class="metric-value">95%</span>
+              <div class="metric-label">Seuil de remplacement</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 2 : Agent Collecteurs ===== -->
+    <div class="accordion importance-critical">
+      <button class="accordion-header">
+        Agent Collecteurs
+      </button>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+
+          <div class="agent-fiche">
+            <div class="agent-fiche-header">
+              <span class="fiche-version">v2.1.0</span>
+              <span class="fiche-status en-revue">En revue</span>
+            </div>
+            <p><strong>Rôle :</strong> 10 agents collecteurs, un par pôle (pole1 à pole10), spécialisés dans la collecte d'alertes IT. Chacun génère des événements JSON conformes au schéma Dashboard_IT et les écrit dans <code>Backend/storage/raw/</code>.</p>
+            <p><strong>Objectif :</strong> remplacer les 10 scripts Python de collecte (<code>collect_poleX_*.py</code>) par des agents à maturité (mémoire + règles). Une fois le seuil de 95 % de réponses conformes atteint, le script est remplacé par l'agent avec authentification Vault obligatoire (<code>pole1.json</code> à <code>pole10.json</code>).</p>
+          </div>
+
+          <h2>Les 10 pôles couverts</h2>
+          <div class="poles-grid" role="list" aria-label="Grille des 10 pôles spécialisés">
+            <div class="pole-cell" role="listitem"><span class="pole-num">P1</span><span class="pole-name">Technologies</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P2</span><span class="pole-name">Logiciels</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P3</span><span class="pole-name">IA / Data</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P4</span><span class="pole-name">Cybersécurité</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P5</span><span class="pole-name">Conformité</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P6</span><span class="pole-name">Réseaux</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P7</span><span class="pole-name">Systèmes</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P8</span><span class="pole-name">Cloud</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P9</span><span class="pole-name">Données</span></div>
+            <div class="pole-cell" role="listitem"><span class="pole-num">P10</span><span class="pole-name">Innovation</span></div>
+          </div>
+
+          <div class="common-bar">
+            <span class="common-tag">Intégration Dashboard_IT</span>
+            <span class="common-tag">Sécurité Vault</span>
+            <span class="common-tag">Standards Dashboard_IT</span>
+            <span class="common-tag">Métriques / DoD</span>
+            <span class="common-tag">Gouvernance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 3 : Agent Cerveau ===== -->
+    <div class="accordion importance-critical">
+      <button class="accordion-header">
+        Agent Cerveau
+      </button>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+
+          <div class="agent-fiche">
+            <div class="agent-fiche-header">
+              <span class="fiche-version">v2.1.0</span>
+              <span class="fiche-status en-revue">En revue</span>
+            </div>
+            <p><strong>Rôle :</strong> agent manager qui supervise, nettoie, répare et relance les 10 agents collecteurs. Il garantit la cohérence des logs et du stockage, et réduit les interventions manuelles.</p>
+            <p><strong>Objectif :</strong> démontrer qu'un agent opérationnel peut assurer la supervision, le nettoyage et la réparation/relance des collecteurs de façon reproductible et mesurable.</p>
+          </div>
+
+          <h2>Quatre responsabilités</h2>
+          <div class="component-cards cc-2col">
+            <div class="component-card">
+              <h4>Manager</h4>
+              <p>Surveillance de l'état des 10 collecteurs : succès/échec, latence. Décision de relance si échec ou timeout.</p>
+            </div>
+            <div class="component-card">
+              <h4>Nettoyer</h4>
+              <p>Suppression ou archivage des logs obsolètes, des fichiers <code>raw/</code> et <code>processed/</code> selon la politique de rétention (90 jours).</p>
+            </div>
+            <div class="component-card">
+              <h4>Réparer</h4>
+              <p>Détection d'anomalies (cache <code>pathcache</code>, intégrité config). Actions correctives documentées et réversibles.</p>
+            </div>
+            <div class="component-card">
+              <h4>Relancer</h4>
+              <p>Déclenchement de l'exécution d'un ou plusieurs collecteurs (ou du pipeline complet) après échec ou selon planning.</p>
+            </div>
+          </div>
+
+          <div class="highlight">
+            <p>Approche 100 % symbolique : règles déterministes (succès/échec, seuils, timeout), politique de rétention explicite, actions traçables, aucune décision prise par un LLM.</p>
+          </div>
+
+          <div class="common-bar">
+            <span class="common-tag">Intégration Dashboard_IT</span>
+            <span class="common-tag">Sécurité Vault</span>
+            <span class="common-tag">Standards Dashboard_IT</span>
+            <span class="common-tag">Métriques / DoD</span>
+            <span class="common-tag">Gouvernance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 4 : Agent Chatbot ===== -->
+    <div class="accordion importance-critical">
+      <button class="accordion-header">
+        Agent Chatbot
+      </button>
+      <div class="accordion-content">
+        <div class="accordion-inner">
+
+          <div class="agent-fiche">
+            <div class="agent-fiche-header">
+              <span class="fiche-version">v2.1.0</span>
+              <span class="fiche-status en-revue">En revue</span>
+            </div>
+            <p><strong>Rôle :</strong> chatbot intégré au frontend Dashboard_IT (React/TypeScript), animé par une base FAQ préremplie. Réponses prêtes, interface simple et efficace.</p>
+            <p><strong>Objectif :</strong> démontrer qu'un chatbot FAQ répond au même niveau d'exigence que les POC Cerveau et Collecteurs : qualité des réponses, cohérence, traçabilité, intégration Dashboard_IT.</p>
+          </div>
+
+          <h2>Fonctionnalités</h2>
+          <div class="component-cards">
+            <div class="component-card">
+              <h4>Base FAQ versionnée</h4>
+              <p>Questions/réponses prédéfinies en format JSON ou Markdown. Versionnée, sans contenu sensible. Couverture 100 % des questions accessibles.</p>
+            </div>
+            <div class="component-card">
+              <h4>Matching intelligent</h4>
+              <p>Recherche par mots-clés, similarité ou menu par catégories. Cible : 95 % ou plus de réponses correctes sur un jeu de test (questions FAQ + variantes).</p>
+            </div>
+            <div class="component-card">
+              <h4>Traçabilité</h4>
+              <p>Enregistrement de chaque interaction (question posée, réponse fournie, timestamp) pour audit et amélioration continue.</p>
+            </div>
+          </div>
+
+          <div class="highlight highlight-red">
+            <p>100 % frontend : FAQ structurée (JSON/Markdown) + matching par règles, pas de LLM génératif. Contrairement aux agents Cerveau et Collecteurs, le Chatbot peut fonctionner sans backend. Dans ce cas, l'authentification Vault s'applique à un endpoint optionnel de log des interactions ou au pipeline de déploiement.</p>
+          </div>
+
+          <div class="common-bar">
+            <span class="common-tag">Intégration Dashboard_IT</span>
+            <span class="common-tag">Sécurité Vault</span>
+            <span class="common-tag">Standards Dashboard_IT</span>
+            <span class="common-tag">Métriques / DoD</span>
+            <span class="common-tag">Gouvernance</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Démarche de démonstration technique et académique 2026</p>
+  </footer>
+
+  <script src="common.js" defer></script>
+</body>
+</html>
