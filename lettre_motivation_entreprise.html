@@ -19,13 +19,10 @@
     "description": "Lettre de motivation de Gabriel ROULON pour une alternance en Intelligence Artificielle et gouvernance des systèmes.",
     "author": { "@type": "Person", "name": "Gabriel ROULON" },
     "inLanguage": "fr-FR",
-    "dateModified": "2026-02-18"
+    "dateModified": "2026-03-05"
   }
   </script>
   <style>
-    .page-header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-    .page-header h1 { font-size: 2em; margin-bottom: 6px; }
-    .page-header .subtitle { color: var(--text-secondary); font-size: 0.97em; }
 
     .letter-section { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 48px 56px; margin-bottom: 40px; }
     .letter-section p { margin-bottom: 20px; text-align: justify; text-align-last: left; font-size: 1.05em; line-height: 1.75; color: var(--text); }
@@ -42,6 +39,21 @@
 <body>
   <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
   <header role="banner">
     <div class="header-left">
       <a href="index.html" aria-label="Retour à l'accueil">
@@ -50,32 +62,20 @@
       </a>
     </div>
     <div class="header-right">
-      <nav class="nav-dropdown" aria-label="Navigation principale">
-        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
-          Navigation <span class="nav-arrow">&#9660;</span>
-        </button>
-        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
-          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
-          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
-          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
-          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
-          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
-          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
-          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
-          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
-          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
-          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
-          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
-          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
-          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
-          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
-          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
-        </ul>
-      </nav>
+      <button class="btn-quick-read btn-nav-info" id="btn-nav-modal" aria-haspopup="dialog" aria-label="Comment naviguer sur le site">Navigation</button>
+
     </div>
   </header>
 
   <main id="main-content" role="main">
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <a href="index.html#acc-candidature">Profil et candidature</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <span class="breadcrumb-current" aria-current="page">Lettre de motivation (Entreprise)</span>
+  </nav>
+
     <h1 class="sr-only">Lettre de motivation, Candidature entreprise</h1>
 
     <section class="letter-section" aria-labelledby="letter-title">
@@ -83,7 +83,7 @@
 
       <p class="letter-greeting">Madame, Monsieur,</p>
 
-      <p>Actuellement en reconversion vers les métiers de l'informatique, j'ai intégré le 5 janvier 2026 la formation de Technicien Supérieur Systèmes et Réseaux (TSSR). Dans le cadre de ma poursuite d'études en troisième année de Bachelor en Intelligence Artificielle à Eugenia School, en alternance, je recherche une entreprise partenaire où je pourrai m'investir pleinement.</p>
+      <p>Actuellement en reconversion vers les métiers de l'informatique, j'ai intégré le 5 janvier 2026 la formation de Technicien Supérieur Systèmes et Réseaux (TSSR). Dans le cadre de ma poursuite d'études en troisième année de Bachelor en Intelligence Artificielle & Business à Eugenia School, en alternance, je recherche une entreprise partenaire où je pourrai m'investir pleinement.</p>
 
       <p>Je m'oriente progressivement vers la gouvernance de l'IA, un domaine qui fait désormais partie de mon quotidien. Après trois mois d'utilisation intensive de l'IA dans mes projets, j'ai naturellement été amené à m'intéresser aux questions de fiabilité, d'éthique et de maîtrise des systèmes.</p>
 
@@ -102,13 +102,17 @@
         <div class="sig-first">Gabriel</div>
       </div>
     </section>
-  </main>
+
+</main>
 
   <footer role="contentinfo">
-    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Gabriel ROULON</p>
     <p>Démarche de démonstration technique et académique 2026</p>
   </footer>
 
   <script src="common.js" defer></script>
+  <button class="btn-chatbot-fab"
+          data-summary="Lettre de motivation — Alternance IA, entreprise partenaire 2026.&#10;Contexte : Bachelor IA Eugenia School, recherche d'entreprise d'alternance.&#10;Projets : IT Dashboard (POC veille IT opérationnel), INIT_SEQUENCE (gouvernance IA formalisée).&#10;Atout : 3 ans alternance industrie, rigueur, autonomie technique, structuration de solutions.&#10;Objectif : contribuer à des projets IA réels et consolider les fondements académiques."
+          aria-label="Résumé IA de la page" title="Résumé&#160;IA">Résumé&#160;IA</button>
 </body>
 </html>

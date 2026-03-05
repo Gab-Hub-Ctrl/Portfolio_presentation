@@ -160,7 +160,20 @@ header {
   box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.18);
 }
 
-/* === BOUTON CHATBOT === */
+/* Variante Statuts (bleu) */
+.btn-blue {
+  color: var(--blue);
+  border-color: var(--blue);
+}
+.btn-blue:hover,
+.btn-blue:focus-visible {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+}
+
+/* === BOUTON CHATBOT (header legacy) === */
 .btn-chatbot {
   background: transparent;
   color: var(--text-secondary);
@@ -198,11 +211,52 @@ header {
   outline: none;
 }
 
+/* === FAB RÉSUMÉ IA (floating action button) === */
+.btn-chatbot-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 400;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 16px 8px 12px;
+  font-size: 0.82em;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.btn-chatbot-fab::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+  flex-shrink: 0;
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+.btn-chatbot-fab:hover,
+.btn-chatbot-fab.active {
+  background: var(--bg-card);
+  color: var(--text);
+  border-color: var(--text-secondary);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.14);
+  outline: none;
+}
+
 /* === CHATBOT PANEL === */
 .chatbot-panel {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  bottom: 80px;
+  right: 24px;
   width: 440px;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -327,62 +381,39 @@ header {
 }
 .chatbot-status.done { color: #2a9d4a; }
 
-/* === NAV DROPDOWN === */
-.nav-dropdown { position: relative; }
-
-.nav-dropdown-toggle {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.88em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
-  white-space: nowrap;
+/* === BREADCRUMB === */
+.breadcrumb {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 8px 0 10px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.83em;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
 }
-.nav-dropdown-toggle:hover,
-.nav-dropdown-toggle[aria-expanded="true"] {
-  color: var(--text);
-  border-color: var(--text-secondary);
-}
-
-.nav-arrow { font-size: 0.75em; transition: transform 0.2s; }
-.nav-dropdown-toggle[aria-expanded="true"] .nav-arrow { transform: rotate(180deg); }
-
-.nav-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  list-style: none;
-  min-width: 200px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-  z-index: 200;
-  overflow: hidden;
-}
-.nav-dropdown-menu[aria-hidden="true"] { display: none; }
-
-.nav-dropdown-menu li a {
-  display: block;
-  padding: 10px 16px;
+.breadcrumb a {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.9em;
-  transition: background 0.1s, color 0.1s;
+  transition: color 0.15s;
 }
-.nav-dropdown-menu li a:hover,
-.nav-dropdown-menu li a:focus {
-  background: var(--bg-card);
-  color: var(--text);
-  outline: none;
+.breadcrumb a:hover { color: var(--blue); }
+.breadcrumb-sep { color: var(--border); font-size: 1.1em; }
+.breadcrumb-current { color: var(--text); font-weight: 500; }
+
+/* === HEADER CENTER (sous-titre centré — index.html) === */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78em;
+  font-weight: 400;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
 }
+@media (max-width: 700px) { .header-center { display: none; } }
 
 /* === FOOTER === */
 footer {
@@ -400,11 +431,20 @@ footer a {
 }
 footer a:hover { color: var(--text); }
 
+/* === PAGE HEADER (titre de page avec bordure basse) === */
+.page-header {
+  padding: 14px 0 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.page-header h1 { font-size: 2em; margin-bottom: 6px; }
+.page-header .subtitle { color: var(--text-secondary); font-size: 0.97em; }
+
 /* === MAIN === */
 main {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: calc(var(--header-h) + 32px) clamp(16px, 4vw, 40px) 48px;
+  padding: calc(var(--header-h) + 12px) clamp(16px, 4vw, 40px) 48px;
   animation: fadeIn 0.3s ease;
 }
 
@@ -709,7 +749,8 @@ code {
   .cards-grid-3 { grid-template-columns: 1fr; }
   .metrics-grid { grid-template-columns: repeat(2, 1fr); }
   .letter-section { padding: 24px 20px; }
-  .chatbot-panel { width: calc(100vw - 24px); right: 12px; bottom: 16px; }
+  .chatbot-panel { width: calc(100vw - 24px); right: 12px; bottom: 72px; }
+  .btn-chatbot-fab { right: 12px; bottom: 16px; }
 }
 
 @media (max-width: 480px) {
@@ -719,7 +760,7 @@ code {
 
 /* === PRINT === */
 @media print {
-  header, footer, .modal-overlay, .btn-quick-read, .btn-chatbot, .btn-important, .nav-dropdown, .chatbot-panel { display: none !important; }
+  header, footer, .modal-overlay, .btn-quick-read, .btn-chatbot, .btn-chatbot-fab, .btn-important, .nav-dropdown, .chatbot-panel { display: none !important; }
   main { padding: 0; max-width: 100%; animation: none; }
   .accordion-content { max-height: none !important; overflow: visible !important; }
   .accordion-inner { border-top: none; }

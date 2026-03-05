@@ -20,7 +20,7 @@
     "description": "Système de gouvernance IA par machine à états finis. Bootloader, SYSTEM, USER PROMPT, Module Cognitif, 7 prompts fondateurs.",
     "author": { "@type": "Person", "name": "Gabriel ROULON" },
     "inLanguage": "fr-FR",
-    "dateModified": "2026-02-19"
+    "dateModified": "2026-03-05"
   }
   </script>
   <style>
@@ -34,13 +34,7 @@
       padding-bottom: 48px;
     }
 
-    .page-header {
-      padding: 36px 0 28px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 28px;
-    }
     .page-header h1 { font-size: 1.9em; margin-bottom: 6px; }
-    .page-header .subtitle { color: var(--text-secondary); font-size: 0.95em; }
 
     /* === TYPOGRAPHIE INTERNE === */
     .accordion-inner h2 {
@@ -433,35 +427,20 @@
       </a>
     </div>
     <div class="header-right">
-      <button class="btn-chatbot"
-        data-summary="INIT_SEQUENCE : gouvernance IA par machine à états finis, 3 607 lignes, 7 états.&#10;Problème résolu : perte totale de contexte IA entre sessions sur un projet de grande ampleur.&#10;4 couches : Bootloader (activation stricte), SYSTEM (règles, transitions), USER PROMPT (guide), Module Cognitif (S5).&#10;7 états : de S(-1) réception initiale à S5, activation du mode analyse avancé.&#10;11 fichiers fondateurs : 7 prompts (Comportement, Standards, Vision, Pôles x4, Architecture, Arborescence/UI, Orchestration).&#10;10 figures historiques intégrées comme piliers de raisonnement dans le Module Cognitif.&#10;Activation S5 par phrase dédiée, déclenchement unique du mode analyse avancé.&#10;Valeur architecturale : structuration d'un système complexe reproductible. Obsolète sur les IA publiques actuelles."
-        aria-label="Ouvrir le résumé IA de la page">
-        Résumé IA
-      </button>
-      <nav class="nav-dropdown" aria-label="Navigation principale">
-        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">Navigation <span class="nav-arrow">&#9660;</span></button>
-        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
-          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
-          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
-          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
-          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
-          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
-          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
-          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
-          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
-          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
-          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
-          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
-          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
-          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
-          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
-          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
-        </ul>
-      </nav>
+      <button class="btn-quick-read btn-nav-info" id="btn-nav-modal" aria-haspopup="dialog" aria-label="Comment naviguer sur le site">Navigation</button>
+
     </div>
   </header>
 
   <main id="main-content" role="main">
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <a href="index.html#acc-technique">IT Dashboard</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <span class="breadcrumb-current" aria-current="page">INIT_SEQUENCE</span>
+  </nav>
+
     <h1 class="sr-only">INIT_SEQUENCE, IT Dashboard</h1>
 
     <!-- ===== SECTION 1 : Pourquoi INIT_SEQUENCE ===== -->
@@ -960,12 +939,14 @@
       </div>
     </div>
 
-  </main>
+</main>
 
   <footer role="contentinfo">
-    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Gabriel ROULON</p>
     <p>Démarche de démonstration technique et académique 2026</p>
   </footer>
-
+  <button class="btn-chatbot-fab"
+          data-summary="INIT_SEQUENCE : gouvernance IA par machine à états finis, 3 607 lignes, 7 états.&#10;Problème résolu : perte totale de contexte IA entre sessions sur un projet de grande ampleur.&#10;4 couches : Bootloader (activation stricte), SYSTEM (règles, transitions), USER PROMPT (guide), Module Cognitif (S5).&#10;7 états : de S(-1) réception initiale à S5, activation du mode analyse avancé.&#10;11 fichiers fondateurs : 7 prompts (Comportement, Standards, Vision, Pôles x4, Architecture, Arborescence/UI, Orchestration).&#10;10 figures historiques intégrées comme piliers de raisonnement dans le Module Cognitif.&#10;Activation S5 par phrase dédiée, déclenchement unique du mode analyse avancé.&#10;Valeur architecturale : structuration d'un système complexe reproductible. Obsolète sur les IA publiques actuelles."
+          aria-label="Résumé IA de la page" title="Résumé&#160;IA">Résumé&#160;IA</button>
 </body>
 </html>

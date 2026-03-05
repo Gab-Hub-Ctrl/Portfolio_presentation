@@ -19,13 +19,10 @@
     "description": "Architecture d'une suite de maintenance Windows : Setup_Script, Maintenance_Agent, sécurité RBAC, frontend React.",
     "author": { "@type": "Person", "name": "Gabriel ROULON" },
     "inLanguage": "fr-FR",
-    "dateModified": "2026-02-19"
+    "dateModified": "2026-03-05"
   }
   </script>
   <style>
-    .page-header { padding: 36px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
-    .page-header h1 { font-size: 2em; margin-bottom: 6px; }
-    .page-header .subtitle { color: var(--text-secondary); font-size: 0.97em; }
     .accordion-inner p { color: var(--text-secondary); }
     .accordion-inner h3 { font-size: 1em; color: var(--text-secondary); font-weight: 500; margin: 16px 0 6px; }
     .page-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
@@ -221,37 +218,20 @@
       </a>
     </div>
     <div class="header-right">
-      <button class="btn-chatbot"
-        data-summary="Maintenance Agent : suite modulaire de maintenance Windows, architecture finalisée, implémentation à venir.&#10;Contexte : automatiser la maintenance et les diagnostics des postes Windows (Active Directory, Windows Server).&#10;Architecture 2 couches : Setup_Script (orchestration, déploiement initial) et Maintenance_Agent (exécution runtime).&#10;6 modules : Admin, User, Shared, Backend, Scheduler, RemoteServer.&#10;Sécurité : signature Authenticode, RBAC par rôle, DPAPI pour les secrets locaux, TLS pour les échanges.&#10;Backend : API FastAPI Python pour les échanges entre le frontend et les agents de maintenance.&#10;Frontend : React + Vite + Tailwind (prévu), interfaces Admin et User distinctes.&#10;Statut : conception finalisée. Systèmes cibles : Windows Server, Active Directory."
-        aria-label="Ouvrir le résumé IA de la page">
-        Résumé IA
-      </button>
-      <nav class="nav-dropdown" aria-label="Navigation principale">
-        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
-          Navigation <span class="nav-arrow">&#9660;</span>
-        </button>
-        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
-          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
-          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
-          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
-          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
-          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
-          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
-          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
-          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
-          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
-          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
-          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
-          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
-          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
-          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
-          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
-        </ul>
-      </nav>
+      <button class="btn-quick-read btn-nav-info" id="btn-nav-modal" aria-haspopup="dialog" aria-label="Comment naviguer sur le site">Navigation</button>
+
     </div>
   </header>
 
   <main id="main-content" role="main">
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <a href="index.html#acc-realisations-it">Informatique & Systèmes</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <span class="breadcrumb-current" aria-current="page">Maintenance Agent</span>
+  </nav>
+
     <div class="page-header">
       <h1 class="sr-only">Maintenance Agent, IT Dashboard</h1>
       <div class="page-meta">
@@ -427,13 +407,16 @@
       </div>
     </div>
 
-  </main>
+</main>
 
   <footer role="contentinfo">
-    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Gabriel ROULON</p>
     <p>Démarche de démonstration technique et académique 2026</p>
   </footer>
 
   <script src="common.js" defer></script>
+  <button class="btn-chatbot-fab"
+          data-summary="Maintenance Agent : suite modulaire de maintenance Windows, architecture finalisée, implémentation à venir.&#10;Contexte : automatiser la maintenance et les diagnostics des postes Windows (Active Directory, Windows Server).&#10;Architecture 2 couches : Setup_Script (orchestration, déploiement initial) et Maintenance_Agent (exécution runtime).&#10;6 modules : Admin, User, Shared, Backend, Scheduler, RemoteServer.&#10;Sécurité : signature Authenticode, RBAC par rôle, DPAPI pour les secrets locaux, TLS pour les échanges.&#10;Backend : API FastAPI Python pour les échanges entre le frontend et les agents de maintenance.&#10;Frontend : React + Vite + Tailwind (prévu), interfaces Admin et User distinctes.&#10;Statut : en cours de conception. Systèmes cibles : Windows Server, Active Directory."
+          aria-label="Résumé IA de la page" title="Résumé&#160;IA">Résumé&#160;IA</button>
 </body>
 </html>

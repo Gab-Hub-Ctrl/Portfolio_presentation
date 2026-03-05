@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>CV Gabriel ROULON — Candidature Bachelor IA</title>
-  <meta name="description" content="Curriculum Vitae de Gabriel ROULON, candidat Bachelor Intelligence Artificielle en alternance 2026. TSSR ENI, IT Dashboard POC opérationnel, gouvernance IA.">
+  <meta name="description" content="Curriculum Vitae de Gabriel ROULON, candidat Bachelor Intelligence Artificielle & Business en alternance 2026. TSSR ENI, IT Dashboard POC opérationnel, gouvernance IA.">
   <meta name="author" content="Gabriel ROULON">
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#ffffff">
@@ -16,12 +16,12 @@
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "Gabriel ROULON",
-    "jobTitle": "Candidat Bachelor Intelligence Artificielle — Alternance 2026",
+    "jobTitle": "Candidat Bachelor Intelligence Artificielle & Business — Alternance 2026",
     "email": "gabriel.roulon@gmail.com",
     "telephone": "+33638226821",
     "address": { "@type": "PostalAddress", "addressLocality": "Clermont-Ferrand" },
     "inLanguage": "fr-FR",
-    "dateModified": "2026-03-04"
+    "dateModified": "2026-03-05"
   }
   </script>
   <style>
@@ -34,11 +34,21 @@
       margin: 0;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       background: var(--bg-secondary);
       box-sizing: border-box;
-      padding-bottom: 32px;
+      padding-bottom: 40px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    /* Breadcrumb aligné sur la largeur du A4 */
+    main > .breadcrumb {
+      width: 794px;
+      max-width: 100%;
+      background: transparent;
+      border-color: rgba(0,0,0,0.10);
     }
 
     /* === PAGE A4 === */
@@ -378,7 +388,7 @@
     /* === PRINT === */
     @media print {
       @page { size: A4; margin: 0; }
-      header, .nav-dropdown, .cv-download-btn { display: none !important; }
+      header, .cv-download-btn { display: none !important; }
       footer { display: none !important; }
       main { padding-top: 0; background: none; display: block; }
       .cv-wrapper { width: 210mm; height: 297mm; box-shadow: none; margin: 0; }
@@ -406,6 +416,21 @@
 <body>
   <a href="#main-content" class="skip-link">Aller au contenu principal</a>
 
+  <div id="chatbot-panel" class="chatbot-panel" role="complementary" aria-label="Résumé IA de la page">
+    <div class="chatbot-head">
+      <div class="chatbot-title-group">
+        <span class="chatbot-title">Résumé IA</span>
+        <span class="chatbot-dot" aria-hidden="true"></span>
+      </div>
+      <button class="chatbot-close-btn" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="chatbot-body">
+      <div class="chatbot-think" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="chatbot-msg" aria-live="polite" aria-label="Résumé de la page"></div>
+      <div class="chatbot-status" aria-live="polite"></div>
+    </div>
+  </div>
+
   <header role="banner">
     <div class="header-left">
       <a href="index.html" aria-label="Retour à l'accueil">
@@ -414,32 +439,20 @@
       </a>
     </div>
     <div class="header-right">
-      <nav class="nav-dropdown" aria-label="Navigation principale">
-        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
-          Navigation <span class="nav-arrow">&#9660;</span>
-        </button>
-        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
-          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
-          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
-          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
-          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
-          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
-          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
-          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
-          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
-          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
-          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
-          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
-          <li role="none"><a href="simulation_pea.html" role="menuitem">Simulation PEA</a></li>
-          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
-          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
-          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
-        </ul>
-      </nav>
+      <button class="btn-quick-read btn-nav-info" id="btn-nav-modal" aria-haspopup="dialog" aria-label="Comment naviguer sur le site">Navigation</button>
+
     </div>
   </header>
 
   <main id="main-content" role="main">
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <a href="index.html#acc-candidature">Profil et candidature</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <span class="breadcrumb-current" aria-current="page">Curriculum Vitae</span>
+  </nav>
+
     <div class="cv-wrapper">
 
       <!-- ===== BANDEAU NOM / TITRE ===== -->
@@ -669,8 +682,12 @@
 
       </div><!-- /cv-body -->
     </div><!-- /cv-wrapper -->
-  </main>
+
+</main>
 
   <script src="common.js" defer></script>
+  <button class="btn-chatbot-fab"
+          data-summary="CV Gabriel ROULON — candidature Bachelor IA &amp; Business, Eugenia School, alternance 2026.&#10;Formation : Bac Pro, TAI, TSSR (depuis janvier 2026). Reconversion IT.&#10;Expérience : 3 ans alternance électricité et maintenance industrielle (2021-2024).&#10;Compétences : Python, FastAPI, PowerShell, TypeScript, React, HashiCorp Vault.&#10;Projets : IT Dashboard (POC opérationnel), INIT_SEQUENCE (gouvernance IA, 3 607 lignes, 7 états).&#10;Objectif : Expert en Gouvernance IA, Bachelor alternance 2026."
+          aria-label="Résumé IA de la page" title="Résumé&#160;IA">Résumé&#160;IA</button>
 </body>
 </html>

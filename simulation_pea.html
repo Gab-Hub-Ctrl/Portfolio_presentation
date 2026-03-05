@@ -24,37 +24,97 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 18px 22px 14px;
+      padding: 8px 16px;
       margin-bottom: 16px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr) auto;
-      gap: 20px 20px;
-      align-items: end;
       position: sticky;
       top: var(--header-h);
       z-index: 50;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     }
+
+    /* Barre résumé (toujours visible) */
+    .params-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      min-height: 28px;
+    }
+    .params-bar-vals {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+      font-size: 0.78em;
+    }
+    .pb-group { display: inline-flex; align-items: baseline; gap: 4px; }
+    .pb-lbl   { color: var(--text-secondary); font-weight: 500; }
+    .pb-val   { font-weight: 700; color: var(--text); }
+    .pb-sec   { color: #1a7a3a; }
+    .pb-eq    { color: var(--blue); }
+    .pb-dyn   { color: var(--red); }
+    .pb-dot   { color: var(--border); font-size: 0.9em; }
+    .pb-pipe  { color: var(--border); margin: 0 4px; }
+    .params-bar-btns { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+    .btn-reset-sm {
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.82em;
+      color: var(--text-secondary);
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      line-height: 1.4;
+    }
+    .btn-reset-sm:hover { border-color: var(--text-secondary); color: var(--text); }
+    .btn-toggle-params {
+      padding: 3px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.76em;
+      color: var(--text-secondary);
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+      line-height: 1.4;
+    }
+    .btn-toggle-params:hover { border-color: var(--text-secondary); color: var(--text); }
+    .btn-toggle-params.open  { border-color: var(--blue); color: var(--blue); }
+
+    /* Corps des sliders (collapsible) */
+    .params-body {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: 8px 16px;
+      align-items: end;
+    }
+    .params-body[hidden] { display: none; }
     .dash-params-sep {
       grid-column: 1 / -1;
       border: none;
       border-top: 1px solid var(--border);
-      margin: 8px 0 0;
+      margin: 4px 0 0;
     }
     .params-taux-label {
       grid-column: 1 / -1;
-      font-size: 0.71em;
+      font-size: 0.70em;
       font-weight: 600;
       color: var(--text-secondary);
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      padding-bottom: 2px;
+      padding-bottom: 0;
     }
     .params-taux-row {
       grid-column: 1 / -1;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 12px;
       align-items: end;
     }
     .param-label.label-sec { color: #1a7a3a; font-weight: 600; }
@@ -63,17 +123,17 @@
     .param-item input[type="range"].range-sec { accent-color: #1a7a3a; }
     .param-item input[type="range"].range-eq  { accent-color: var(--blue); }
     .param-item input[type="range"].range-dyn { accent-color: var(--red); }
-    @media (max-width: 768px) { .dash-params { grid-template-columns: 1fr 1fr; } .params-taux-row { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 480px) { .dash-params { grid-template-columns: 1fr; } .params-taux-row { grid-template-columns: 1fr; } }
-    .param-label { font-size: 0.76em; color: var(--text-secondary); font-weight: 500; margin-bottom: 4px; }
-    .param-val   { font-size: 1.1em; font-weight: 700; color: var(--blue); margin-bottom: 6px; }
+    @media (max-width: 768px) { .params-body { grid-template-columns: 1fr 1fr; } .params-taux-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .params-body { grid-template-columns: 1fr; } .params-taux-row { grid-template-columns: 1fr; } }
+    .param-label { font-size: 0.72em; color: var(--text-secondary); font-weight: 500; margin-bottom: 2px; }
+    .param-val   { font-size: 0.95em; font-weight: 700; color: var(--blue); margin-bottom: 3px; }
     .param-item input[type="range"] { width: 100%; accent-color: var(--blue); cursor: pointer; }
-    .param-minmax { display: flex; justify-content: space-between; font-size: 0.7em; color: var(--text-secondary); margin-top: 2px; }
+    .param-minmax { display: flex; justify-content: space-between; font-size: 0.68em; color: var(--text-secondary); margin-top: 1px; }
     .btn-reset {
-      padding: 8px 16px;
+      padding: 6px 12px;
       border: 1px solid var(--border);
       border-radius: 4px;
-      font-size: 0.78em;
+      font-size: 0.76em;
       color: var(--text-secondary);
       background: transparent;
       cursor: pointer;
@@ -307,92 +367,111 @@
       </a>
     </div>
     <div class="header-right">
-      <button class="btn-chatbot"
-        data-summary="Simulation PEA interactive v2.1 : 10 panneaux analytiques, 3 profils, curseurs ajustables.&#10;KPI principaux : capital final, plus-value, rendement moyen, multiplicateur, comparaison Livret A 2,4 %.&#10;Projections sur 5, 10 et 25 ans. Capitalisation mensuelle, norme AMF/MiFID II.&#10;Rendements ajustables : Sécuritaire 1-15 %, Équilibré 1-20 %, Dynamique 1-25 % (défaut : 5/7/10 %).&#10;Matrice sensibilité : rendement x durée, légende dynamique par profil. Distribution des gains par profil.&#10;Stress tests : scénarios de crise 2000, 2008, 2020. Livret A 2,4 %. Inflation 2,0 % (cible BCE).&#10;10 ancres de navigation rapide. Remise à zéro complète (capital, versement, durée, taux, stress).&#10;Référentiel méthodologique : PEA_V2_PRO.html. Composition des profils fixée. Valeurs indicatives."
-        aria-label="Ouvrir le résumé IA de la page">
-        Résumé IA
-      </button>
-      <nav class="nav-dropdown" aria-label="Navigation principale">
-        <button class="nav-dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Menu de navigation">
-          Navigation <span class="nav-arrow">&#9660;</span>
-        </button>
-        <ul class="nav-dropdown-menu" role="menu" aria-hidden="true">
-          <li role="none"><a href="index.html" role="menuitem">Accueil</a></li>
-          <li role="none"><a href="presentation_synthetique.html" role="menuitem">Présentation synthétique</a></li>
-          <li role="none"><a href="init_sequence.html" role="menuitem">INIT_SEQUENCE</a></li>
-          <li role="none"><a href="poc_agents.html" role="menuitem">POC Agents</a></li>
-          <li role="none"><a href="profil_personnel.html" role="menuitem">Profil personnel</a></li>
-          <li role="none"><a href="cv.html" role="menuitem">Curriculum Vitae</a></li>
-          <li role="none"><a href="lettre_motivation_ecole.html" role="menuitem">Lettre de motivation (École)</a></li>
-          <li role="none"><a href="lettre_motivation_entreprise.html" role="menuitem">Lettre de motivation (Entreprise)</a></li>
-          <li role="none"><a href="contact.html" role="menuitem">Contact</a></li>
-          <li role="none"><a href="realisations_standards.html" role="menuitem">Réalisation standards</a></li>
-          <li role="none"><a href="realisations_doc_financiere.html" role="menuitem">Documentation financière</a></li>
-          <li role="none"><a href="PEA_V2_PRO.html" role="menuitem">Étude PEA v2.0</a></li>
-          <li role="none"><a href="simulation_pea.html" role="menuitem" aria-current="page">Simulation PEA</a></li>
-          <li role="none"><a href="realisations_doc_technique.html" role="menuitem">Documentation technique</a></li>
-          <li role="none"><a href="realisations_maintenance_agent.html" role="menuitem">Maintenance Agent</a></li>
-          <li role="none"><a href="mon_laboratoire.html" role="menuitem">Mon Laboratoire</a></li>
-        </ul>
-      </nav>
+      <button class="btn-quick-read btn-nav-info" id="btn-nav-modal" aria-haspopup="dialog" aria-label="Comment naviguer sur le site">Navigation</button>
+
     </div>
   </header>
 
   <main id="main-content" role="main">
+  <nav class="breadcrumb" aria-label="Fil d'Ariane">
+    <a href="index.html">Accueil</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <a href="index.html#acc-realisations-finance">Finance & Investissement</a>
+    <span class="breadcrumb-sep" aria-hidden="true">&#8250;</span>
+    <span class="breadcrumb-current" aria-current="page">Simulation PEA</span>
+  </nav>
+
     <h1 class="sr-only">Dashboard Simulation PEA, 3 profils de portefeuille</h1>
 
     <!-- PARAMÈTRES -->
     <div class="dash-params" role="region" aria-labelledby="params-lbl">
       <span id="params-lbl" class="sr-only">Paramètres de simulation</span>
-      <div class="param-item">
-        <div class="param-label">Capital initial</div>
-        <div class="param-val" id="d-cap">5 000 €</div>
-        <input type="range" id="i-cap" min="1000" max="50000" step="500" value="5000"
-               aria-label="Capital initial" oninput="refresh()">
-        <div class="param-minmax"><span>1 k€</span><span>50 k€</span></div>
-      </div>
-      <div class="param-item">
-        <div class="param-label">Versement mensuel</div>
-        <div class="param-val" id="d-ver">200 €/mois</div>
-        <input type="range" id="i-ver" min="50" max="1000" step="50" value="200"
-               aria-label="Versement mensuel" oninput="refresh()">
-        <div class="param-minmax"><span>50 €</span><span>1 000 €</span></div>
-      </div>
-      <div class="param-item">
-        <div class="param-label">Durée</div>
-        <div class="param-val" id="d-dur">25 ans</div>
-        <input type="range" id="i-dur" min="5" max="30" step="1" value="25"
-               aria-label="Durée en années" oninput="refresh()">
-        <div class="param-minmax"><span>5 ans</span><span>30 ans</span></div>
-      </div>
-      <button class="btn-reset" onclick="resetAll()" type="button"
-              aria-label="Réinitialiser aux valeurs par défaut">
-        Réinitialiser<br><small>5 k€ · 200 € · 25 ans<br>5 % · 7 % · 10 %</small>
-      </button>
 
-      <hr class="dash-params-sep" aria-hidden="true">
-      <div class="params-taux-label">Rendements par profil</div>
-      <div class="params-taux-row">
+      <!-- Barre résumé (toujours visible) -->
+      <div class="params-bar">
+        <div class="params-bar-vals">
+          <span class="pb-group">
+            <span class="pb-lbl">Capital</span>
+            <span class="pb-val" id="pb-cap">5 000 €</span>
+          </span>
+          <span class="pb-dot" aria-hidden="true">·</span>
+          <span class="pb-group">
+            <span class="pb-lbl">Vers.</span>
+            <span class="pb-val" id="pb-ver">200 €/m</span>
+          </span>
+          <span class="pb-dot" aria-hidden="true">·</span>
+          <span class="pb-group">
+            <span class="pb-lbl">Durée</span>
+            <span class="pb-val" id="pb-dur">25 ans</span>
+          </span>
+          <span class="pb-pipe" aria-hidden="true">|</span>
+          <span class="pb-val pb-sec" id="pb-ts">5,0 %</span>
+          <span class="pb-dot" aria-hidden="true">·</span>
+          <span class="pb-val pb-eq" id="pb-te">7,0 %</span>
+          <span class="pb-dot" aria-hidden="true">·</span>
+          <span class="pb-val pb-dyn" id="pb-td">10,0 %</span>
+        </div>
+        <div class="params-bar-btns">
+          <button class="btn-reset-sm" onclick="resetAll()" type="button"
+                  aria-label="Réinitialiser aux valeurs par défaut" title="Réinitialiser">&#8635;</button>
+          <button class="btn-toggle-params" id="btn-toggle-params"
+                  onclick="toggleParams()" type="button"
+                  aria-expanded="false" aria-controls="params-body">Modifier &#9660;</button>
+        </div>
+      </div>
+
+      <!-- Sliders (collapsibles) -->
+      <div class="params-body" id="params-body" hidden>
         <div class="param-item">
-          <div class="param-label label-sec">Taux Sécuritaire</div>
-          <div class="param-val" id="d-ts" style="color:#1a7a3a">5,0 % / an</div>
-          <input type="range" id="i-ts" class="range-sec" min="1" max="15" step="0.5" value="5"
-                 aria-label="Taux de rendement Sécuritaire" oninput="refresh()">
-          <div class="param-minmax"><span>1 %</span><span>15 %</span></div>
+          <div class="param-label">Capital initial</div>
+          <div class="param-val" id="d-cap">5 000 €</div>
+          <input type="range" id="i-cap" min="1000" max="50000" step="500" value="5000"
+                 aria-label="Capital initial" oninput="refresh()">
+          <div class="param-minmax"><span>1 k€</span><span>50 k€</span></div>
         </div>
         <div class="param-item">
-          <div class="param-label label-eq">Taux Équilibré</div>
-          <div class="param-val" id="d-te" style="color:var(--blue)">7,0 % / an</div>
-          <input type="range" id="i-te" class="range-eq" min="1" max="20" step="0.5" value="7"
-                 aria-label="Taux de rendement Équilibré" oninput="refresh()">
-          <div class="param-minmax"><span>1 %</span><span>20 %</span></div>
+          <div class="param-label">Versement mensuel</div>
+          <div class="param-val" id="d-ver">200 €/mois</div>
+          <input type="range" id="i-ver" min="50" max="1000" step="50" value="200"
+                 aria-label="Versement mensuel" oninput="refresh()">
+          <div class="param-minmax"><span>50 €</span><span>1 000 €</span></div>
         </div>
         <div class="param-item">
-          <div class="param-label label-dyn">Taux Dynamique</div>
-          <div class="param-val" id="d-td" style="color:var(--red)">10,0 % / an</div>
-          <input type="range" id="i-td" class="range-dyn" min="1" max="25" step="0.5" value="10"
-                 aria-label="Taux de rendement Dynamique" oninput="refresh()">
-          <div class="param-minmax"><span>1 %</span><span>25 %</span></div>
+          <div class="param-label">Durée</div>
+          <div class="param-val" id="d-dur">25 ans</div>
+          <input type="range" id="i-dur" min="5" max="30" step="1" value="25"
+                 aria-label="Durée en années" oninput="refresh()">
+          <div class="param-minmax"><span>5 ans</span><span>30 ans</span></div>
+        </div>
+        <button class="btn-reset" onclick="resetAll()" type="button"
+                aria-label="Réinitialiser aux valeurs par défaut">
+          Réinitialiser<br><small>5 k€ · 200 € · 25 ans<br>5 % · 7 % · 10 %</small>
+        </button>
+
+        <hr class="dash-params-sep" aria-hidden="true">
+        <div class="params-taux-label">Rendements par profil</div>
+        <div class="params-taux-row">
+          <div class="param-item">
+            <div class="param-label label-sec">Taux Sécuritaire</div>
+            <div class="param-val" id="d-ts" style="color:#1a7a3a">5,0 % / an</div>
+            <input type="range" id="i-ts" class="range-sec" min="1" max="15" step="0.5" value="5"
+                   aria-label="Taux de rendement Sécuritaire" oninput="refresh()">
+            <div class="param-minmax"><span>1 %</span><span>15 %</span></div>
+          </div>
+          <div class="param-item">
+            <div class="param-label label-eq">Taux Équilibré</div>
+            <div class="param-val" id="d-te" style="color:var(--blue)">7,0 % / an</div>
+            <input type="range" id="i-te" class="range-eq" min="1" max="20" step="0.5" value="7"
+                   aria-label="Taux de rendement Équilibré" oninput="refresh()">
+            <div class="param-minmax"><span>1 %</span><span>20 %</span></div>
+          </div>
+          <div class="param-item">
+            <div class="param-label label-dyn">Taux Dynamique</div>
+            <div class="param-val" id="d-td" style="color:var(--red)">10,0 % / an</div>
+            <input type="range" id="i-td" class="range-dyn" min="1" max="25" step="0.5" value="10"
+                   aria-label="Taux de rendement Dynamique" oninput="refresh()">
+            <div class="param-minmax"><span>1 %</span><span>25 %</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -660,7 +739,7 @@
                 <tr><th>Métr.</th><th>Livret A</th><th class="th-sec">Sécu.</th><th class="th-eq">Équil.</th><th class="th-dyn">Dyn.</th></tr>
               </thead>
               <tbody>
-                <tr class="row-lbl"><td>Taux</td><td>2,4 %</td><td>5,0 %</td><td>7,0 %</td><td>10,0 %</td></tr>
+                <tr class="row-lbl"><td>Taux</td><td>2,4 %</td><td id="la-t-s">5,0 %</td><td id="la-t-e">7,0 %</td><td id="la-t-d">10,0 %</td></tr>
                 <tr class="row-hl"><td>VF totale</td><td id="la-vf"></td><td id="la-s"></td><td id="la-e"></td><td id="la-d"></td></tr>
                 <tr><td>Gain vs Livret A</td><td>—</td><td id="la-gs"></td><td id="la-ge"></td><td id="la-gd"></td></tr>
                 <tr><td>Ratio VF / LA</td><td>1,00×</td><td id="la-rs"></td><td id="la-re"></td><td id="la-rd"></td></tr>
@@ -797,10 +876,10 @@
       </div>
     </div>
 
-  </main>
+</main>
 
   <footer role="contentinfo">
-    <p>IT Dashboard, Gabriel ROULON</p>
+    <p>Gabriel ROULON</p>
     <p>Démarche de démonstration technique et académique 2026</p>
     <p style="font-size:0.78em;margin-top:6px">Référentiel méthodologique : <a href="PEA_V2_PRO.html" style="color:inherit;text-decoration:underline">PEA_V2_PRO.html</a></p>
   </footer>
@@ -888,7 +967,27 @@
     }
 
     // ============================================================
-    // MISE À JOUR AFFICHAGE SLIDERS
+    // TOGGLE PANNEAU PARAMÈTRES
+    // ============================================================
+    function toggleParams() {
+      var body = document.getElementById('params-body');
+      var btn  = document.getElementById('btn-toggle-params');
+      var open = body.hasAttribute('hidden');
+      if (open) {
+        body.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        btn.className = 'btn-toggle-params open';
+        btn.innerHTML = 'Fermer &#9650;';
+      } else {
+        body.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+        btn.className = 'btn-toggle-params';
+        btn.innerHTML = 'Modifier &#9660;';
+      }
+    }
+
+    // ============================================================
+    // MISE À JOUR AFFICHAGE SLIDERS + BARRE RÉSUMÉ
     // ============================================================
     function updateSliders(p) {
       document.getElementById('d-cap').textContent = p.C.toLocaleString('fr-FR') + '\u00a0\u20ac';
@@ -899,6 +998,18 @@
       for (var i = 0; i < 3; i++) {
         var pctStr = (t[i] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         document.getElementById(tIds[i]).textContent = pctStr + '\u00a0%\u00a0/\u00a0an';
+      }
+      // Barre résumé
+      var capStr = p.C >= 1000
+        ? (p.C / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 0 }) + '\u00a0k\u20ac'
+        : p.C.toLocaleString('fr-FR') + '\u00a0\u20ac';
+      set('pb-cap', capStr);
+      set('pb-ver', p.PMT.toLocaleString('fr-FR') + '\u00a0\u20ac/m');
+      set('pb-dur', p.n + '\u00a0ans');
+      var pbIds = ['pb-ts', 'pb-te', 'pb-td'];
+      for (var j = 0; j < 3; j++) {
+        var ps = (t[j] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        set(pbIds[j], ps + '\u00a0%');
       }
     }
 
@@ -1128,6 +1239,8 @@
         var gainLA = res.vfTot - resLA.vfTot;
         var ratio  = res.vfTot / resLA.vfTot;
         var s = IDS[i];
+        var tPct = (t[i] * 100).toLocaleString('fr-FR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '\u00a0%';
+        set('la-t-' + s, tPct);
         set('la-' + s, eur(res.vfTot));
         set('la-g' + s, '+' + eur(gainLA));
         set('la-r' + s, ratio.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '\u00d7');
@@ -1150,9 +1263,10 @@
 
     function updateManuel() {
       var p = getP();
+      var t = getTaux();
       for (var i = 0; i < 3; i++) {
         var man = parseFloat(document.getElementById('st-m-' + IDS[i]).value) || 0;
-        set('st-r-' + IDS[i], eur(calcVF(p.C, p.PMT, TAUX[i] + man / 100, p.n).vfTot));
+        set('st-r-' + IDS[i], eur(calcVF(p.C, p.PMT, t[i] + man / 100, p.n).vfTot));
       }
     }
 
@@ -1197,5 +1311,8 @@
     // ============================================================
     document.addEventListener('DOMContentLoaded', refresh);
   </script>
+  <button class="btn-chatbot-fab"
+          data-summary="Simulation PEA interactive v2.1 : 10 panneaux analytiques, 3 profils, curseurs ajustables.&#10;KPI principaux : capital final, plus-value, rendement moyen, multiplicateur, comparaison Livret A 2,4 %.&#10;Projections sur 5, 10 et 25 ans. Capitalisation mensuelle, norme AMF/MiFID II.&#10;Rendements ajustables : Sécuritaire 1-15 %, Équilibré 1-20 %, Dynamique 1-25 % (défaut : 5/7/10 %).&#10;Matrice sensibilité : rendement x durée, légende dynamique par profil. Distribution des gains par profil.&#10;Stress tests : scénarios de crise 2000, 2008, 2020. Livret A 2,4 %. Inflation 2,0 % (cible BCE).&#10;10 ancres de navigation rapide. Remise à zéro complète (capital, versement, durée, taux, stress).&#10;Référentiel méthodologique : PEA_V2_PRO.html. Composition des profils fixée. Valeurs indicatives."
+          aria-label="Résumé IA de la page" title="Résumé&#160;IA">Résumé&#160;IA</button>
 </body>
 </html>
